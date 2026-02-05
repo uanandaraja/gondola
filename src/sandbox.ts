@@ -35,9 +35,9 @@ export async function createSandbox(
 
   const image = await client.images.fromId(imageId);
 
-  // Get Modal secret for Moonshot API key
+  // Get Modal secret for Kimi API key
   console.log(`[${id}] Loading Modal secrets...`);
-  const moonshotSecret = await client.secrets.fromName("moonshot-api-key");
+  const kimiSecret = await client.secrets.fromName("kimi-api-key");
 
   // Create sandbox with port 4096 encrypted and secrets
   console.log(`[${id}] Creating Modal sandbox...`);
@@ -45,7 +45,7 @@ export async function createSandbox(
   const sandbox = await client.sandboxes.create(app, image, {
     idleTimeoutMs, // Dies after X minutes of inactivity (no HTTP requests)
     encryptedPorts: [4096],
-    secrets: [moonshotSecret], // Inject MOONSHOT_API_KEY as env var
+    secrets: [kimiSecret], // Inject KIMI_API_KEY as env var
   });
 
   console.log(`[${id}] Sandbox created: ${sandbox.sandboxId}`);
@@ -133,19 +133,19 @@ export async function createSandbox(
     }
   }
 
-  // Create global opencode config with Moonshot provider
-  console.log(`[${id}] Configuring opencode with Moonshot AI...`);
+  // Create global opencode config with Kimi For Coding provider
+  console.log(`[${id}] Configuring opencode with Kimi For Coding...`);
   const configDir = await sandbox.exec(["mkdir", "-p", "/root/.config/opencode"]);
   await configDir.wait();
   
   const configContent = JSON.stringify({
     "$schema": "https://opencode.ai/config.json",
-    "model": "moonshotai/kimi-k2.5",
+    "model": "kimi-for-coding/k2p5",
     "provider": {
-      "moonshotai": {
+      "kimi-for-coding": {
         "options": {
-          "apiKey": "{env:MOONSHOT_API_KEY}",
-          "baseURL": "https://api.moonshot.ai/v1"
+          "apiKey": "{env:KIMI_API_KEY}",
+          "baseURL": "https://api.kimi.com/coding/v1"
         }
       }
     }
@@ -169,7 +169,7 @@ export async function createSandbox(
   // Check if env var is set (masked for security)
   const checkEnv = await sandbox.exec([
     "bash", "-c",
-    "if [ -n \"$MOONSHOT_API_KEY\" ]; then echo 'MOONSHOT_API_KEY: set (hidden)'; else echo 'MOONSHOT_API_KEY: not set'; fi"
+    "if [ -n \"$KIMI_API_KEY\" ]; then echo 'KIMI_API_KEY: set (hidden)'; else echo 'KIMI_API_KEY: not set'; fi"
   ]);
   const envOutput = await checkEnv.stdout.readText();
   console.log(`[${id}] ${envOutput.trim()}`);
@@ -183,11 +183,11 @@ export async function createSandbox(
   const opencodeVersion = await checkOpencode.stdout.readText();
   console.log(`[${id}] Opencode: ${opencodeVersion.trim()}`);
 
-  // Test API key by making a simple request to Moonshot
-  console.log(`[${id}] Testing Moonshot API key...`);
+  // Test API key by making a simple request to Kimi
+  console.log(`[${id}] Testing Kimi API key...`);
   const apiTest = await sandbox.exec([
     "bash", "-c",
-    "curl -s -o /dev/null -w '%{http_code}' -H \"Authorization: Bearer $MOONSHOT_API_KEY\" https://api.moonshot.ai/v1/models 2>&1 || echo '000'"
+    "curl -s -o /dev/null -w '%{http_code}' -H \"Authorization: Bearer $KIMI_API_KEY\" https://api.kimi.com/coding/v1/models 2>&1 || echo '000'"
   ]);
   const apiStatus = await apiTest.stdout.readText();
   console.log(`[${id}] API test status: ${apiStatus.trim()}`);
