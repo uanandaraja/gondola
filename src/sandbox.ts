@@ -169,7 +169,7 @@ export async function createSandbox(
   // Check if env var is set (masked for security)
   const checkEnv = await sandbox.exec([
     "bash", "-c",
-    "echo \"MOONSHOT_API_KEY is set: ${MOONSHOT_API_KEY:+yes}${MOONSHOT_API_KEY:-no}\""
+    "if [ -n \"$MOONSHOT_API_KEY\" ]; then echo 'MOONSHOT_API_KEY: set (hidden)'; else echo 'MOONSHOT_API_KEY: not set'; fi"
   ]);
   const envOutput = await checkEnv.stdout.readText();
   console.log(`[${id}] ${envOutput.trim()}`);
