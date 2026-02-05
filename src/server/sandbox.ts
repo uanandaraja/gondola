@@ -36,10 +36,7 @@ export async function createSandbox(
 
 	// Create sandbox with port 4096 encrypted and secrets
 	console.log(`[${id}] Creating Modal sandbox...`);
-	const idleTimeoutMs = parseInt(
-		process.env.SANDBOX_IDLE_TIMEOUT_MS || "1200000",
-		10,
-	);
+	const idleTimeoutMs = 1800000; // 30 minutes
 	const sandbox = await client.sandboxes.create(app, image, {
 		idleTimeoutMs, // Dies after X minutes of inactivity (no HTTP requests)
 		encryptedPorts: [4096],
