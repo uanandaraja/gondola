@@ -183,6 +183,20 @@ export async function createSandbox(
   const opencodeVersion = await checkOpencode.stdout.readText();
   console.log(`[${id}] Opencode: ${opencodeVersion.trim()}`);
 
+  // Test API key by making a simple request to Moonshot
+  console.log(`[${id}] Testing Moonshot API key...`);
+  const apiTest = await sandbox.exec([
+    "bash", "-c",
+    "curl -s -o /dev/null -w '%{http_code}' -H \"Authorization: Bearer $MOONSHOT_API_KEY\" https://api.moonshot.ai/v1/models 2>&1 || echo '000'"
+  ]);
+  const apiStatus = await apiTest.stdout.readText();
+  console.log(`[${id}] API test status: ${apiStatus.trim()}`);
+  if (apiStatus.trim() === '401') {
+    console.error(`[${id}] ⚠️  API key is invalid or unauthorized!`);
+  } else if (apiStatus.trim() === '200') {
+    console.log(`[${id}] ✅ API key is valid`);
+  }
+
   // Start opencode serve from the repo directory
   console.log(`[${id}] Starting opencode server on port 4096...`);
   
