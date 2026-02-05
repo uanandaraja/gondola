@@ -158,6 +158,22 @@ export async function createSandbox(
   await writeConfig.wait();
   console.log(`[${id}] Opencode config created`);
 
+  // Verify config file content
+  const verifyConfig = await sandbox.exec([
+    "bash", "-c",
+    "cat /root/.config/opencode/opencode.json"
+  ]);
+  const configOutput = await verifyConfig.stdout.readText();
+  console.log(`[${id}] Config file content:\n${configOutput}`);
+
+  // Check if env var is set (masked for security)
+  const checkEnv = await sandbox.exec([
+    "bash", "-c",
+    "echo \"MOONSHOT_API_KEY is set: ${MOONSHOT_API_KEY:+yes}${MOONSHOT_API_KEY:-no}\""
+  ]);
+  const envOutput = await checkEnv.stdout.readText();
+  console.log(`[${id}] ${envOutput.trim()}`);
+
   // Check if opencode is installed
   console.log(`[${id}] Checking opencode installation...`);
   const checkOpencode = await sandbox.exec([
