@@ -1,0 +1,17 @@
+{
+  "name": "gondola",
+  "scripts": {
+    "dev": "bun run --hot src/index.ts",
+    "build:image": "bun run scripts/build-image.ts",
+    "start": "bun run src/index.ts"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "hono": "^4.11.7",
+    "modal": "^0.6.1",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
