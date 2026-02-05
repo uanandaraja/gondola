@@ -1,4 +1,9 @@
-import { createRootRoute, Outlet, HeadContent, Scripts } from "@tanstack/react-router";
+import {
+	createRootRoute,
+	HeadContent,
+	Outlet,
+	Scripts,
+} from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import "../styles/app.css";
 
@@ -18,7 +23,7 @@ function RootComponent() {
 			<head>
 				<HeadContent />
 			</head>
-			<body className="bg-gray-50 min-h-screen">
+			<body>
 				<Outlet />
 				<Scripts />
 			</body>
