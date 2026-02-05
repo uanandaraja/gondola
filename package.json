@@ -1,17 +1,27 @@
 {
-  "name": "gondola",
-  "scripts": {
-    "dev": "bun run --hot src/index.ts",
-    "build:image": "bun run scripts/build-image.ts",
-    "start": "bun run src/index.ts"
-  },
-  "dependencies": {
-    "dotenv": "^17.2.3",
-    "hono": "^4.11.7",
-    "modal": "^0.6.1",
-    "zod": "^4.3.6"
-  },
-  "devDependencies": {
-    "@types/bun": "latest"
-  }
+	"name": "gondola",
+	"scripts": {
+		"dev": "bun run --hot src/index.ts",
+		"build:image": "bun run scripts/build-image.ts",
+		"start": "bun run src/index.ts",
+		"db:generate": "bunx drizzle-kit generate",
+		"db:migrate": "bun run src/db/migrate.ts",
+		"db:push": "bunx drizzle-kit push",
+		"db:studio": "bunx drizzle-kit studio",
+		"lint": "bunx biome check",
+		"lint:fix": "bunx biome check --write"
+	},
+	"dependencies": {
+		"dotenv": "^17.2.3",
+		"drizzle-orm": "^0.45.1",
+		"hono": "^4.11.7",
+		"modal": "^0.6.1",
+		"postgres": "^3.4.8",
+		"zod": "^4.3.6"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.3.14",
+		"@types/bun": "latest",
+		"drizzle-kit": "^0.31.8"
+	}
 }
