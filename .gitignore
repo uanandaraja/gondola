@@ -3,3 +3,12 @@ node_modules/
 
 # env
 .env
+
+# build artifacts
+.nitro/
+.output/
+dist/
+drizzle/
+
+# generated
+src/routeTree.gen.ts
