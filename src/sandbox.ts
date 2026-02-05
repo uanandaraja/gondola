@@ -35,12 +35,17 @@ export async function createSandbox(
 
   const image = await client.images.fromId(imageId);
 
-  // Create sandbox with port 4096 encrypted
+  // Get Modal secret for Moonshot API key
+  console.log(`[${id}] Loading Modal secrets...`);
+  const moonshotSecret = await client.secrets.fromName("moonshot-api-key");
+
+  // Create sandbox with port 4096 encrypted and secrets
   console.log(`[${id}] Creating Modal sandbox...`);
   const idleTimeoutMs = parseInt(process.env.SANDBOX_IDLE_TIMEOUT_MS || "1200000");
   const sandbox = await client.sandboxes.create(app, image, {
     idleTimeoutMs, // Dies after X minutes of inactivity (no HTTP requests)
     encryptedPorts: [4096],
+    secrets: [moonshotSecret], // Inject MOONSHOT_API_KEY as env var
   });
 
   console.log(`[${id}] Sandbox created: ${sandbox.sandboxId}`);
@@ -127,6 +132,31 @@ export async function createSandbox(
       console.warn(`[${id}] Dependency install failed (continuing anyway)`);
     }
   }
+
+  // Create global opencode config with Moonshot provider
+  console.log(`[${id}] Configuring opencode with Moonshot AI...`);
+  const configDir = await sandbox.exec(["mkdir", "-p", "/root/.config/opencode"]);
+  await configDir.wait();
+  
+  const configContent = JSON.stringify({
+    "$schema": "https://opencode.ai/config.json",
+    "model": "moonshotai/kimi-k2.5",
+    "provider": {
+      "moonshotai": {
+        "options": {
+          "apiKey": "{env:MOONSHOT_API_KEY}",
+          "baseURL": "https://api.moonshot.ai/v1"
+        }
+      }
+    }
+  }, null, 2);
+  
+  const writeConfig = await sandbox.exec([
+    "bash", "-c",
+    `echo '${configContent}' > /root/.config/opencode/opencode.json`
+  ]);
+  await writeConfig.wait();
+  console.log(`[${id}] Opencode config created`);
 
   // Check if opencode is installed
   console.log(`[${id}] Checking opencode installation...`);
