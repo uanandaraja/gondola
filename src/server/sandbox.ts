@@ -38,7 +38,8 @@ export async function createSandbox(
 	console.log(`[${id}] Creating Modal sandbox...`);
 	const idleTimeoutMs = 1800000; // 30 minutes
 	const sandbox = await client.sandboxes.create(app, image, {
-		idleTimeoutMs, // Dies after X minutes of inactivity (no HTTP requests)
+		timeoutMs: 1800000, // 30 min max lifetime
+		idleTimeoutMs, // 30 min idle timeout
 		encryptedPorts: [4096],
 		secrets: [kimiSecret], // Inject KIMI_API_KEY as env var
 	});
