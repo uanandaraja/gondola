@@ -1,0 +1,4 @@
+const tsrStartManifest = () => ({ "routes": { "__root__": { "filePath": "/Users/nizzy/dev/gondola/src/routes/__root.tsx", "children": ["/", "/sandbox/$id"], "preloads": ["/assets/main-DT4ky_IM.js"], "assets": [{ "tag": "link", "attrs": { "rel": "stylesheet", "href": "/assets/main-CySsVuiw.css", "type": "text/css" } }] }, "/": { "filePath": "/Users/nizzy/dev/gondola/src/routes/index.tsx", "assets": [{ "tag": "link", "attrs": { "rel": "stylesheet", "href": "/assets/main-CySsVuiw.css", "type": "text/css" } }], "preloads": ["/assets/index-C6QBAxW1.js"] }, "/sandbox/$id": { "filePath": "/Users/nizzy/dev/gondola/src/routes/sandbox.$id.tsx", "assets": [{ "tag": "link", "attrs": { "rel": "stylesheet", "href": "/assets/main-CySsVuiw.css", "type": "text/css" } }], "preloads": ["/assets/sandbox._id-0ItM9_Ef.js"] } }, "clientEntry": "/assets/main-DT4ky_IM.js" });
+export {
+  tsrStartManifest
+};

@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { ModalClient, type Sandbox } from "modal";
-import { db, schema } from "./db";
-import type { SandboxRecord } from "./db/schema";
+import { db, schema } from "../db";
+import type { SandboxRecord } from "../db/schema";
 
 const modalInstances = new Map<string, Sandbox>();
 
