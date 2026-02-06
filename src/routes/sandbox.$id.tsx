@@ -59,51 +59,47 @@ function SandboxDetail() {
 					</div>
 
 					<div className="space-y-4">
-						<div className="grid-3 py-4 border-b">
-							<div className="text-sm font-semibold text-secondary">
+						<div className="detail-row py-4 border-b">
+							<div className="detail-label text-sm font-semibold text-secondary">
 								Git URL
 							</div>
-							<div
-								className="text-sm text-mono break-all"
-								style={{ gridColumn: "span 2" }}
-							>
+							<div className="detail-value text-sm text-mono break-all">
 								{sandbox.gitUrl}
 							</div>
 						</div>
 
-						<div className="grid-3 py-4 border-b">
-							<div className="text-sm font-semibold text-secondary">Branch</div>
-							<div className="text-sm" style={{ gridColumn: "span 2" }}>
+						<div className="detail-row py-4 border-b">
+							<div className="detail-label text-sm font-semibold text-secondary">
+								Branch
+							</div>
+							<div className="detail-value text-sm">
 								{sandbox.branch || "default"}
 							</div>
 						</div>
 
-						<div className="grid-3 py-4 border-b">
-							<div className="text-sm font-semibold text-secondary">
+						<div className="detail-row py-4 border-b">
+							<div className="detail-label text-sm font-semibold text-secondary">
 								Modal Sandbox ID
 							</div>
-							<div
-								className="text-sm text-mono"
-								style={{ gridColumn: "span 2" }}
-							>
+							<div className="detail-value text-sm text-mono break-all">
 								{sandbox.modalSandboxId}
 							</div>
 						</div>
 
-						<div className="grid-3 py-4 border-b">
-							<div className="text-sm font-semibold text-secondary">
+						<div className="detail-row py-4 border-b">
+							<div className="detail-label text-sm font-semibold text-secondary">
 								Created At
 							</div>
-							<div className="text-sm" style={{ gridColumn: "span 2" }}>
+							<div className="detail-value text-sm">
 								{new Date(sandbox.createdAt).toLocaleString()}
 							</div>
 						</div>
 
-						<div className="grid-3 py-4">
-							<div className="text-sm font-semibold text-secondary">
+						<div className="detail-row py-4">
+							<div className="detail-label text-sm font-semibold text-secondary">
 								OpenCode URL
 							</div>
-							<div style={{ gridColumn: "span 2" }}>
+							<div className="detail-value">
 								<a
 									href={sandbox.opencodeUrl}
 									target="_blank"
@@ -116,7 +112,7 @@ function SandboxDetail() {
 						</div>
 					</div>
 
-					<div className="mt-8 flex gap-4">
+					<div className="mt-8 detail-actions flex gap-4">
 						<a
 							href={sandbox.opencodeUrl}
 							target="_blank"

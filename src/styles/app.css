@@ -262,8 +262,9 @@ body {
 
 .grid-3 {
 	display: grid;
-	grid-template-columns: repeat(3, 1fr);
+	grid-template-columns: 1fr 2fr;
 	gap: var(--space-md);
+	align-items: start;
 }
 
 @media (max-width: 768px) {
@@ -384,5 +385,75 @@ body {
 	.card-header,
 	.card-body {
 		padding: var(--space-sm);
+	}
+
+	/* Mobile table layout */
+	.table {
+		font-size: 0.8rem;
+	}
+
+	.table th,
+	.table td {
+		white-space: nowrap;
+	}
+
+	.sandbox-col-id {
+		width: auto;
+		min-width: 70px;
+	}
+
+	.sandbox-col-repo {
+		max-width: 120px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.sandbox-col-repo .sandbox-repo-name {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.sandbox-col-status {
+		width: auto;
+		min-width: 80px;
+	}
+
+	.sandbox-col-created {
+		width: auto;
+		min-width: 80px;
+	}
+
+	.sandbox-col-actions {
+		width: auto;
+		min-width: 60px;
+	}
+
+	.badge {
+		font-size: 0.65rem;
+		padding: 2px 6px;
+	}
+
+	/* Mobile detail page layout */
+	.detail-row {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xs);
+	}
+
+	.detail-label {
+		font-size: 0.75rem;
+	}
+
+	.detail-value {
+		font-size: 0.875rem;
+	}
+
+	.detail-actions {
+		flex-direction: column;
+	}
+
+	.detail-actions .btn {
+		width: 100%;
 	}
 }

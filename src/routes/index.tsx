@@ -117,17 +117,17 @@ function Dashboard() {
 						<table className="table">
 							<thead>
 								<tr>
-									<th>ID</th>
-									<th>Repository</th>
-									<th>Status</th>
-									<th>Created</th>
-									<th className="text-right">Actions</th>
+									<th className="sandbox-col-id">ID</th>
+									<th className="sandbox-col-repo">Repository</th>
+									<th className="sandbox-col-status">Status</th>
+									<th className="sandbox-col-created">Created</th>
+									<th className="sandbox-col-actions text-right">Actions</th>
 								</tr>
 							</thead>
 							<tbody className="divide-y">
 								{sandboxes.map((sandbox) => (
 									<tr key={sandbox.id}>
-										<td className="text-mono text-sm whitespace-nowrap">
+										<td className="sandbox-col-id text-mono text-sm">
 											<Link
 												to="/sandbox/$id"
 												params={{ id: sandbox.id }}
@@ -136,8 +136,8 @@ function Dashboard() {
 												{sandbox.id.slice(0, 8)}...
 											</Link>
 										</td>
-										<td className="text-sm">
-											<div className="font-semibold">
+										<td className="sandbox-col-repo text-sm">
+											<div className="font-semibold sandbox-repo-name">
 												{sandbox.gitUrl
 													.replace(/^https?:\/\//, "")
 													.replace(/\.git$/, "")}
@@ -148,17 +148,17 @@ function Dashboard() {
 												</div>
 											)}
 										</td>
-										<td className="whitespace-nowrap">
+										<td className="sandbox-col-status">
 											<span
 												className={`badge ${getStatusBadgeClass(sandbox.status)}`}
 											>
 												{sandbox.status}
 											</span>
 										</td>
-										<td className="text-sm text-secondary whitespace-nowrap">
+										<td className="sandbox-col-created text-sm text-secondary">
 											{new Date(sandbox.createdAt).toLocaleDateString()}
 										</td>
-										<td className="text-right whitespace-nowrap">
+										<td className="sandbox-col-actions text-right">
 											<button
 												onClick={() => handleDelete(sandbox.id)}
 												className="link text-sm"
