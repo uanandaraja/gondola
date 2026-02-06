@@ -1,20 +1,38 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTheme } from "../hooks/useTheme";
 
 export const Route = createFileRoute("/")({
 	component: LandingPage,
 });
+
+function ThemeToggle() {
+	const { theme, toggle } = useTheme();
+	return (
+		<button
+			type="button"
+			onClick={toggle}
+			className="text-text-muted hover:text-text transition-colors duration-150 text-lg leading-none"
+			aria-label="Toggle theme"
+		>
+			{theme === "dark" ? "\u263C" : "\u263E"}
+		</button>
+	);
+}
 
 function LandingPage() {
 	return (
 		<div className="max-w-3xl mx-auto px-6 py-6">
 			<header className="flex items-center justify-between mb-32">
 				<span className="font-bold text-sm">gondola</span>
-				<Link
-					to="/auth"
-					className="text-sm text-text-secondary hover:text-text transition-colors duration-150"
-				>
-					sign in
-				</Link>
+				<div className="flex items-center gap-5">
+					<Link
+						to="/auth"
+						className="text-sm text-text-secondary hover:text-text transition-colors duration-150"
+					>
+						sign in
+					</Link>
+					<ThemeToggle />
+				</div>
 			</header>
 
 			<section className="mb-24">

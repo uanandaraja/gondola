@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet, redirect, useRouter } from "@tanstack/react-router";
+import { useTheme } from "../hooks/useTheme";
 import { signOut, useSession } from "../services/auth/client";
 import { getSession } from "../services/auth/server";
 
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/_authed")({
 
 function AuthedLayout() {
 	const { data: session } = useSession();
+	const { theme, toggle: toggleTheme } = useTheme();
 	const router = useRouter();
 
 	const handleSignOut = () => {
@@ -51,8 +53,16 @@ function AuthedLayout() {
 						)}
 						<button
 							type="button"
+							onClick={toggleTheme}
+							className="text-text-muted hover:text-text transition-colors duration-150 text-lg leading-none"
+							aria-label="Toggle theme"
+						>
+							{theme === "dark" ? "\u263C" : "\u263E"}
+						</button>
+						<button
+							type="button"
 							onClick={handleSignOut}
-							className="text-xs font-mono text-text-muted hover:text-text-secondary transition-colors duration-150"
+							className="text-xs text-text-muted hover:text-text-secondary transition-colors duration-150"
 						>
 							Sign out
 						</button>

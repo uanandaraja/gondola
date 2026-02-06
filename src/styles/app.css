@@ -6,7 +6,7 @@
 @source "../components";
 
 @theme {
-  /* Colors */
+  /* Light (default) */
   --color-bg: #f0f0f0;
   --color-bg-secondary: #ffffff;
   --color-bg-tertiary: #f7f7f7;
@@ -40,5 +40,23 @@
   body {
     min-height: 100vh;
     background-color: var(--color-bg);
+  }
+
+  [data-theme="dark"] {
+    --color-bg: #111111;
+    --color-bg-secondary: #1a1a1a;
+    --color-bg-tertiary: #222222;
+    --color-text: #e5e5e5;
+    --color-text-secondary: #999999;
+    --color-text-muted: #666666;
+    --color-border: #333333;
+    --color-border-light: #2a2a2a;
+    --color-accent: #e5e5e5;
+    --color-accent-hover: #cccccc;
+    --color-success: #22c55e;
+    --color-warning: #eab308;
+    --color-error: #ef4444;
+    --color-link: #e5e5e5;
+    --color-link-hover: #999999;
   }
 }

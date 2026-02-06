@@ -10,6 +10,15 @@ import appCss from "../styles/app.css?url";
 
 const queryClient = new QueryClient();
 
+const themeScript = `
+(function(){
+  var t = localStorage.getItem('theme');
+  if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+})();
+`;
+
 export const Route = createRootRoute({
 	head: () => ({
 		meta: [
@@ -24,6 +33,9 @@ export const Route = createRootRoute({
 			{ rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" },
 			{ rel: "stylesheet", href: appCss },
 		],
+		scripts: [
+			{ children: themeScript },
+		],
 	}),
 	component: RootComponent,
 	notFoundComponent: NotFound,
@@ -31,14 +43,14 @@ export const Route = createRootRoute({
 
 function NotFound() {
 	return (
-		<div className="w-full max-w-[1000px] mx-auto px-6 py-10 md:px-10 md:py-14 text-center">
+		<div className="w-full max-w-3xl mx-auto px-6 py-10 md:px-10 md:py-14 text-center">
 			<h1 className="font-bold text-3xl tracking-tight mb-2">404</h1>
 			<p className="text-text-secondary mb-6">Page not found.</p>
 			<Link
 				to="/app"
 				className="text-link underline underline-offset-2 hover:text-link-hover text-sm transition-colors duration-150"
 			>
-				← Back to Dashboard
+				&larr; Back to Dashboard
 			</Link>
 		</div>
 	);
