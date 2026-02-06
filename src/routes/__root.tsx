@@ -13,6 +13,7 @@ export const Route = createRootRoute({
 			{ title: "Gondola" },
 			{ name: "description", content: "Cloud dev sandbox manager" },
 		],
+		links: [{ rel: "stylesheet", href: "/assets/main.css?v=2" }],
 	}),
 	component: RootComponent,
 });
