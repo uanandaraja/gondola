@@ -13,7 +13,7 @@ const queryClient = new QueryClient();
 const themeScript = `
 (function(){
   var t = localStorage.getItem('theme');
-  if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+  if (t !== 'light') {
     document.documentElement.setAttribute('data-theme', 'dark');
   }
 })();
@@ -58,7 +58,7 @@ function NotFound() {
 
 function RootComponent() {
 	return (
-		<html lang="en">
+		<html lang="en" data-theme="dark">
 			<head>
 				<HeadContent />
 			</head>

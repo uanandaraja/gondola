@@ -1,7 +1,7 @@
 import { useCallback, useSyncExternalStore } from "react";
 
 function getTheme(): "light" | "dark" {
-	if (typeof document === "undefined") return "light";
+	if (typeof document === "undefined") return "dark";
 	return (document.documentElement.getAttribute("data-theme") as "light" | "dark") || "light";
 }
 

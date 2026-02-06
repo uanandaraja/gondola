@@ -40,9 +40,9 @@ function LandingPage() {
 					Cloud sandboxes for AI coding agents
 				</h1>
 				<p className="text-text-secondary max-w-lg mb-8">
-					gondola gives your AI agents a full dev environment in the
-					cloud — clone a repo, install deps, and start coding in
-					seconds.
+					spin up cloud sandboxes for your AI coding agents. run many
+					in parallel, close your laptop, and check back when they're
+					done.
 				</p>
 				<Link
 					to="/auth"
@@ -53,48 +53,39 @@ function LandingPage() {
 			</section>
 
 			<section className="bg-bg-secondary border border-border-light p-8 mb-16">
-				<div className="space-y-6">
-					<div className="flex items-center gap-4">
-						<span className="text-text-secondary text-sm shrink-0 w-20">
-							you
-						</span>
-						<span className="text-text-muted">-&gt;</span>
-						<div className="border border-accent/30 px-4 py-2 text-sm">
-							git clone &amp; bun install
+				<div className="flex flex-col items-center gap-6">
+					<div className="border border-border-light px-5 py-2.5 text-sm text-text-secondary">
+						your browser
+					</div>
+					<span className="text-text-muted text-xs">&darr;</span>
+					<div className="border border-accent/50 px-5 py-2.5 text-sm font-semibold">
+						gondola
+					</div>
+					<span className="text-text-muted text-xs">&darr;</span>
+					<div className="w-full grid grid-cols-3 gap-3">
+						<div className="border border-border-light p-3 text-xs space-y-1.5">
+							<p className="font-semibold text-text text-sm">acme/api</p>
+							<p className="text-text-muted">repo cloned</p>
+							<p className="text-text-muted">deps installed</p>
+							<p className="text-success">agent running</p>
 						</div>
-						<div className="border border-success/40 text-success px-3 py-2 text-xs">
-							modal gpu
+						<div className="border border-border-light p-3 text-xs space-y-1.5">
+							<p className="font-semibold text-text text-sm">acme/web</p>
+							<p className="text-text-muted">repo cloned</p>
+							<p className="text-text-muted">deps installed</p>
+							<p className="text-success">agent running</p>
+						</div>
+						<div className="border border-border-light p-3 text-xs space-y-1.5">
+							<p className="font-semibold text-text text-sm">acme/docs</p>
+							<p className="text-text-muted">repo cloned</p>
+							<p className="text-text-muted">deps installed</p>
+							<p className="text-warning">agent idle</p>
 						</div>
 					</div>
-					<div className="flex items-center gap-4">
-						<span className="text-text-secondary text-sm shrink-0 w-20">
-							claude
-						</span>
-						<span className="text-text-muted">-&gt;</span>
-						<div className="border border-accent/30 px-4 py-2 text-sm">
-							opencode serve
-						</div>
-						<div className="border border-warning/40 text-warning px-3 py-2 text-xs">
-							modal cpu
-						</div>
-					</div>
-					<div className="flex items-center gap-4">
-						<span className="text-text-secondary text-sm shrink-0 w-20">
-							codex
-						</span>
-						<span className="text-text-muted">-&gt;</span>
-						<div className="border border-accent/30 px-4 py-2 text-sm">
-							bun run dev
-						</div>
-						<div className="border border-warning/40 text-warning px-3 py-2 text-xs">
-							modal cpu
-						</div>
-					</div>
+					<p className="text-text-muted text-xs">
+						each sandbox is isolated and keeps running — no laptop required
+					</p>
 				</div>
-				<p className="text-text-muted text-xs mt-6">
-					each sandbox is isolated, persistent, and accessible via
-					browser
-				</p>
 			</section>
 
 			<section className="mb-16">
@@ -106,11 +97,11 @@ function LandingPage() {
 						</span>
 						<div>
 							<p className="font-semibold text-sm mb-1">
-								Sign in with GitHub
+								Paste a git URL
 							</p>
 							<p className="text-text-secondary text-sm">
-								Authenticate once. Your sandboxes are tied to
-								your account.
+								We clone the repo and install dependencies in a
+								cloud sandbox.
 							</p>
 						</div>
 					</div>
@@ -120,11 +111,11 @@ function LandingPage() {
 						</span>
 						<div>
 							<p className="font-semibold text-sm mb-1">
-								Paste a git URL
+								An AI agent starts working
 							</p>
 							<p className="text-text-secondary text-sm">
-								We clone the repo, install dependencies, and
-								spin up a cloud sandbox on Modal.
+								OpenCode runs in the sandbox. Give it a task and
+								walk away.
 							</p>
 						</div>
 					</div>
@@ -134,11 +125,11 @@ function LandingPage() {
 						</span>
 						<div>
 							<p className="font-semibold text-sm mb-1">
-								Start coding
+								Check back anytime
 							</p>
 							<p className="text-text-secondary text-sm">
-								Open the sandbox in your browser. An AI agent is
-								ready to help via OpenCode.
+								Your sandboxes stay running in the cloud. No
+								laptop required.
 							</p>
 						</div>
 					</div>
