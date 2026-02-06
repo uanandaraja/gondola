@@ -43,11 +43,11 @@ function Dashboard() {
 	const getStatusBadgeClass = (status: string) => {
 		switch (status) {
 			case "running":
-				return "badge-success";
+				return "bg-bg-secondary border-border";
 			case "creating":
-				return "badge-warning";
+				return "bg-bg-tertiary border-border";
 			case "error":
-				return "badge-error";
+				return "bg-text text-bg-secondary border-text";
 			case "terminated":
 				return "";
 			default:
@@ -59,7 +59,7 @@ function Dashboard() {
 		<div className="w-full max-w-[1200px] mx-auto p-4 md:p-6">
 			<div className="mb-8">
 				<h1 className="font-bold text-[1.875rem]">GONDOLA</h1>
-				<p className="text-secondary">Cloud development sandbox manager</p>
+				<p className="text-text-secondary">Cloud development sandbox manager</p>
 			</div>
 
 			<div className="bg-bg-secondary border border-border shadow-[2px_2px_0_0_rgba(0,0,0,0.1)] mb-8">
@@ -70,20 +70,20 @@ function Dashboard() {
 					<form onSubmit={handleCreate} className="space-y-4">
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 							<div>
-								<label className="label block mb-1 text-xs font-semibold">
-									Git URL <span className="text-[var(--color-error)]">*</span>
+								<label className="block mb-1 text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary">
+									Git URL <span className="text-error">*</span>
 								</label>
 								<input
 									type="url"
 									value={gitUrl}
 									onChange={(e) => setGitUrl(e.target.value)}
 									placeholder="https://github.com/user/repo.git"
-									className="input w-full px-3 py-2 text-sm border transition-colors duration-150"
+									className="w-full px-3 py-2 text-sm border border-border bg-bg-secondary text-text font-mono transition-colors duration-150"
 									required
 								/>
 							</div>
 							<div>
-								<label className="label block mb-1 text-xs font-semibold">
+								<label className="block mb-1 text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary">
 									Branch (optional)
 								</label>
 								<input
@@ -91,14 +91,14 @@ function Dashboard() {
 									value={branch}
 									onChange={(e) => setBranch(e.target.value)}
 									placeholder="main"
-									className="input w-full px-3 py-2 text-sm border transition-colors duration-150"
+									className="w-full px-3 py-2 text-sm border border-border bg-bg-secondary text-text font-mono transition-colors duration-150"
 								/>
 							</div>
 						</div>
 						<button
 							type="submit"
 							disabled={isCreating}
-							className="btn inline-flex items-center justify-center px-4 py-2 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed md:w-auto w-full"
+							className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold font-mono uppercase tracking-wide bg-accent border border-accent text-bg-secondary hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed md:w-auto w-full transition-colors duration-150"
 						>
 							{isCreating ? "CREATING..." : "CREATE SANDBOX"}
 						</button>
@@ -111,39 +111,42 @@ function Dashboard() {
 					<h2 className="font-semibold text-[1.25rem]">SANDBOXES</h2>
 				</div>
 				{sandboxes.length === 0 ? (
-					<div className="p-4 md:p-6 text-center text-muted">
+					<div className="p-4 md:p-6 text-center text-text-muted">
 						No sandboxes yet. Create one above to get started.
 					</div>
 				) : (
 					<div className="overflow-x-auto">
-						<table className="table w-full border-collapse">
+						<table className="w-full border-collapse">
 							<thead>
 								<tr>
-									<th className="text-left p-3 md:p-4 text-xs font-semibold border-b border-border-light whitespace-nowrap">
+									<th className="text-left p-3 md:p-4 text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary bg-bg-tertiary border-b border-border-light whitespace-nowrap">
 										ID
 									</th>
-									<th className="text-left p-3 md:p-4 text-xs font-semibold border-b border-border-light">
+									<th className="text-left p-3 md:p-4 text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary bg-bg-tertiary border-b border-border-light">
 										Repository
 									</th>
-									<th className="text-left p-3 md:p-4 text-xs font-semibold border-b border-border-light whitespace-nowrap">
+									<th className="text-left p-3 md:p-4 text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary bg-bg-tertiary border-b border-border-light whitespace-nowrap">
 										Status
 									</th>
-									<th className="text-left p-3 md:p-4 text-xs font-semibold border-b border-border-light whitespace-nowrap">
+									<th className="text-left p-3 md:p-4 text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary bg-bg-tertiary border-b border-border-light whitespace-nowrap">
 										Created
 									</th>
-									<th className="text-right p-3 md:p-4 text-xs font-semibold border-b border-border-light whitespace-nowrap">
+									<th className="text-right p-3 md:p-4 text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary bg-bg-tertiary border-b border-border-light whitespace-nowrap">
 										Actions
 									</th>
 								</tr>
 							</thead>
 							<tbody>
 								{sandboxes.map((sandbox) => (
-									<tr key={sandbox.id} className="border-b border-border-light">
-										<td className="p-3 md:p-4 text-mono text-sm whitespace-nowrap">
+									<tr
+										key={sandbox.id}
+										className="border-b border-border-light hover:bg-bg-tertiary transition-colors duration-150"
+									>
+										<td className="p-3 md:p-4 font-mono text-sm whitespace-nowrap">
 											<Link
 												to="/sandbox/$id"
 												params={{ id: sandbox.id }}
-												className="link text-sm"
+												className="text-link underline underline-offset-2 hover:text-link-hover text-sm transition-colors duration-150"
 											>
 												{sandbox.id.slice(0, 8)}...
 											</Link>
@@ -155,25 +158,25 @@ function Dashboard() {
 													.replace(/\.git$/, "")}
 											</div>
 											{sandbox.branch && (
-												<div className="text-muted text-xs">
+												<div className="text-text-muted text-xs">
 													Branch: {sandbox.branch}
 												</div>
 											)}
 										</td>
 										<td className="p-3 md:p-4 whitespace-nowrap">
 											<span
-												className={`badge inline-flex items-center px-2 py-1 text-xs font-semibold border ${getStatusBadgeClass(sandbox.status)}`}
+												className={`inline-flex items-center px-2 py-1 text-xs font-semibold font-mono uppercase tracking-wide border ${getStatusBadgeClass(sandbox.status)}`}
 											>
 												{sandbox.status}
 											</span>
 										</td>
-										<td className="p-3 md:p-4 text-sm text-secondary whitespace-nowrap">
+										<td className="p-3 md:p-4 text-sm text-text-secondary whitespace-nowrap">
 											{sandbox.createdAt.toISOString().split("T")[0]}
 										</td>
 										<td className="p-3 md:p-4 text-right whitespace-nowrap">
 											<button
 												onClick={() => handleDelete(sandbox.id)}
-												className="link text-sm"
+												className="text-link underline underline-offset-2 hover:text-link-hover text-sm transition-colors duration-150"
 											>
 												Delete
 											</button>
