@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { ModalClient, type Sandbox } from "modal";
 import { db, schema } from "../db";
 import type { SandboxRecord } from "../db/schema";
@@ -9,6 +9,7 @@ const MODAL_APP_NAME = process.env.MODAL_APP_NAME || "gondola";
 
 export async function createSandbox(
 	gitUrl: string,
+	userId: string,
 	branch?: string,
 ): Promise<SandboxRecord> {
 	const id = crypto.randomUUID();
@@ -254,6 +255,7 @@ export async function createSandbox(
 		.insert(schema.sandboxes)
 		.values({
 			id,
+			userId,
 			modalSandboxId: sandbox.sandboxId,
 			gitUrl,
 			branch: detectedBranch || null,
@@ -269,16 +271,25 @@ export async function createSandbox(
 
 export async function getSandbox(
 	id: string,
+	userId: string,
 ): Promise<SandboxRecord | undefined> {
 	const result = await db
 		.select()
 		.from(schema.sandboxes)
-		.where(eq(schema.sandboxes.id, id))
+		.where(
+			and(eq(schema.sandboxes.id, id), eq(schema.sandboxes.userId, userId)),
+		)
 		.limit(1);
 	return result[0];
 }
 
-export async function deleteSandbox(id: string): Promise<void> {
+export async function deleteSandbox(id: string, userId: string): Promise<void> {
+	// Verify ownership first
+	const sandbox = await getSandbox(id, userId);
+	if (!sandbox) {
+		throw new Error("Sandbox not found");
+	}
+
 	const instance = modalInstances.get(id);
 
 	if (instance) {
@@ -293,12 +304,17 @@ export async function deleteSandbox(id: string): Promise<void> {
 	await db
 		.update(schema.sandboxes)
 		.set({ status: "terminated" })
-		.where(eq(schema.sandboxes.id, id));
+		.where(
+			and(eq(schema.sandboxes.id, id), eq(schema.sandboxes.userId, userId)),
+		);
 
 	modalInstances.delete(id);
 	console.log(`[${id}] Sandbox terminated`);
 }
 
-export async function listSandboxes(): Promise<SandboxRecord[]> {
-	return db.select().from(schema.sandboxes);
+export async function listSandboxes(userId: string): Promise<SandboxRecord[]> {
+	return db
+		.select()
+		.from(schema.sandboxes)
+		.where(eq(schema.sandboxes.userId, userId));
 }

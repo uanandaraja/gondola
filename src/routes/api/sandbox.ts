@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { auth } from "../../services/auth";
 import { listSandboxes, createSandbox } from "../../server/sandbox";
 
 const createSchema = z.object({
@@ -7,16 +8,40 @@ const createSchema = z.object({
 	branch: z.string().optional(),
 });
 
+async function requireUser(request: Request) {
+	const session = await auth.api.getSession({ headers: request.headers });
+	if (!session?.user?.id) {
+		return null;
+	}
+	return session.user;
+}
+
 export const Route = createFileRoute("/api/sandbox")({
 	server: {
 		handlers: {
-			GET: async () => {
-				const sandboxes = await listSandboxes();
+			GET: async ({ request }: { request: Request }) => {
+				const user = await requireUser(request);
+				if (!user) {
+					return new Response(JSON.stringify({ error: "Unauthorized" }), {
+						status: 401,
+						headers: { "Content-Type": "application/json" },
+					});
+				}
+
+				const sandboxes = await listSandboxes(user.id);
 				return new Response(JSON.stringify({ sandboxes }), {
 					headers: { "Content-Type": "application/json" },
 				});
 			},
 			POST: async ({ request }: { request: Request }) => {
+				const user = await requireUser(request);
+				if (!user) {
+					return new Response(JSON.stringify({ error: "Unauthorized" }), {
+						status: 401,
+						headers: { "Content-Type": "application/json" },
+					});
+				}
+
 				try {
 					const body = await request.json();
 					const result = createSchema.safeParse(body);
@@ -30,7 +55,7 @@ export const Route = createFileRoute("/api/sandbox")({
 
 					const { gitUrl, branch } = result.data;
 					console.log(`\n🚀 Creating sandbox for: ${gitUrl}`);
-					const sandbox = await createSandbox(gitUrl, branch);
+					const sandbox = await createSandbox(gitUrl, user.id, branch);
 					console.log(`✅ Sandbox ready: ${sandbox.opencodeUrl}\n`);
 
 					return new Response(

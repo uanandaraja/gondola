@@ -6,8 +6,7 @@ import {
 	Outlet,
 	Scripts,
 } from "@tanstack/react-router";
-import type { ReactNode } from "react";
-import "../styles/app.css";
+import appCss from "../styles/app.css?url";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +18,7 @@ export const Route = createRootRoute({
 			{ title: "Gondola" },
 			{ name: "description", content: "Cloud dev sandbox manager" },
 		],
+		links: [{ rel: "stylesheet", href: appCss }],
 	}),
 	component: RootComponent,
 	notFoundComponent: NotFound,
@@ -45,7 +45,7 @@ function RootComponent() {
 			<head>
 				<HeadContent />
 			</head>
-			<body>
+			<body className="bg-bg text-text">
 				<QueryClientProvider client={queryClient}>
 					<Outlet />
 				</QueryClientProvider>

@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
-import { fetchSandbox, removeSandbox } from "../server/functions";
+import { fetchSandbox, removeSandbox } from "../../server/functions";
 
-export const Route = createFileRoute("/sandbox/$id")({
+export const Route = createFileRoute("/_authed/sandbox/$id")({
 	loader: async ({ params }) => {
 		const sandbox = await fetchSandbox({ data: params.id });
 		if (!sandbox) {
@@ -54,7 +54,7 @@ function SandboxDetail() {
 					to="/"
 					className="text-text-secondary hover:text-text text-sm transition-colors duration-150"
 				>
-					← Back to Dashboard
+					&larr; Back to Dashboard
 				</Link>
 			</div>
 
@@ -122,7 +122,7 @@ function SandboxDetail() {
 									rel="noopener noreferrer"
 									className="text-link underline underline-offset-2 hover:text-link-hover text-sm font-mono break-all transition-colors duration-150"
 								>
-									{sandbox.opencodeUrl} ↗
+									{sandbox.opencodeUrl} &nearr;
 								</a>
 							</div>
 						</div>
@@ -135,7 +135,7 @@ function SandboxDetail() {
 							rel="noopener noreferrer"
 							className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold font-mono uppercase tracking-wide bg-accent text-bg-secondary hover:bg-accent-hover md:w-auto w-full transition-colors duration-150"
 						>
-							OPEN IN OPENCODE ↗
+							OPEN IN OPENCODE &nearr;
 						</a>
 						<button
 							onClick={handleDelete}

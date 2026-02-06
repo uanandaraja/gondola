@@ -5,9 +5,9 @@ import {
 	createNewSandbox,
 	fetchSandboxes,
 	removeSandbox,
-} from "../server/functions";
+} from "../../server/functions";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authed/")({
 	loader: async () => {
 		return await fetchSandboxes();
 	},
@@ -75,14 +75,7 @@ function Dashboard() {
 	};
 
 	return (
-		<div className="w-full max-w-[1000px] mx-auto px-6 py-10 md:px-10 md:py-14">
-			<div className="mb-10">
-				<h1 className="font-bold text-3xl tracking-tight">GONDOLA</h1>
-				<p className="text-text-secondary mt-1">
-					Cloud development sandbox manager
-				</p>
-			</div>
-
+		<div className="w-full max-w-[1000px] mx-auto px-6 py-8 md:px-10 md:py-10">
 			<div className="bg-bg-secondary border border-border-light shadow-sm mb-10">
 				<div className="px-6 py-5 border-b border-border-light">
 					<h2 className="font-semibold text-lg">Create New Sandbox</h2>
