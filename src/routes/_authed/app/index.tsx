@@ -3,7 +3,6 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import {
 	createNewProject,
-	deleteExistingProject,
 	fetchProjects,
 } from "../../../server/functions";
 
@@ -40,11 +39,6 @@ function ProjectList() {
 		},
 	});
 
-	const deleteMutation = useMutation({
-		mutationFn: (id: string) => deleteExistingProject({ data: id }),
-		onSuccess: () => router.invalidate(),
-	});
-
 	const handleCreate = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!githubUrl.trim()) return;
@@ -62,16 +56,6 @@ function ProjectList() {
 			branch: branch || undefined,
 			description: description || undefined,
 		});
-	};
-
-	const handleDelete = (id: string) => {
-		if (
-			!confirm(
-				"Are you sure? This will delete the project and all its sessions.",
-			)
-		)
-			return;
-		deleteMutation.mutate(id);
 	};
 
 	return (
@@ -217,23 +201,22 @@ function ProjectList() {
 											{project.description}
 										</p>
 									)}
-									<p className="text-xs text-text-muted mt-2">
-										Created{" "}
-										{new Date(
-											project.createdAt,
-										).toLocaleDateString()}
-									</p>
+									<div className="flex items-center gap-3 mt-2 text-xs text-text-muted">
+										<span>
+											{project.activeSessions}{" "}
+											{project.activeSessions === 1
+												? "session"
+												: "sessions"}
+										</span>
+										<span>&middot;</span>
+										<span>
+											Created{" "}
+											{new Date(
+												project.createdAt,
+											).toLocaleDateString()}
+										</span>
+									</div>
 								</Link>
-								<button
-									type="button"
-									onClick={(e) => {
-										e.preventDefault();
-										handleDelete(project.id);
-									}}
-									className="text-error/70 hover:text-error text-sm ml-4 transition-colors duration-150"
-								>
-									Delete
-								</button>
 							</div>
 						</div>
 					))}

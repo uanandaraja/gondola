@@ -5,7 +5,7 @@ import {
 	createProject,
 	deleteProject,
 	getProject,
-	listProjects,
+	listProjectsWithSessionCounts,
 	updateProject,
 } from "./projects";
 import {
@@ -35,7 +35,7 @@ async function requireUserId(): Promise<string> {
 export const fetchProjects = createServerFn({ method: "GET" }).handler(
 	async () => {
 		const userId = await requireUserId();
-		return await listProjects(userId);
+		return await listProjectsWithSessionCounts(userId);
 	},
 );
 

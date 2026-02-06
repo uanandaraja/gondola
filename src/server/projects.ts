@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, count, eq, ne } from "drizzle-orm";
 import { db, schema } from "../db";
 import type { ProjectRecord } from "../db/schema";
 
@@ -43,6 +43,29 @@ export async function listProjects(userId: string): Promise<ProjectRecord[]> {
 		.select()
 		.from(schema.projects)
 		.where(eq(schema.projects.userId, userId));
+}
+
+export async function listProjectsWithSessionCounts(
+	userId: string,
+): Promise<(ProjectRecord & { activeSessions: number })[]> {
+	const projects = await listProjects(userId);
+	if (projects.length === 0) return [];
+
+	const counts = await db
+		.select({
+			projectId: schema.sessions.projectId,
+			count: count(),
+		})
+		.from(schema.sessions)
+		.where(ne(schema.sessions.status, "terminated"))
+		.groupBy(schema.sessions.projectId);
+
+	const countMap = new Map(counts.map((c) => [c.projectId, c.count]));
+
+	return projects.map((p) => ({
+		...p,
+		activeSessions: countMap.get(p.id) ?? 0,
+	}));
 }
 
 export async function updateProject(

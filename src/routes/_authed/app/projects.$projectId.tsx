@@ -8,7 +8,6 @@ import {
 	fetchProjectSecrets,
 	fetchSessions,
 	removeProjectSecret,
-	removeSession,
 } from "../../../server/functions";
 
 export const Route = createFileRoute("/_authed/app/projects/$projectId")({
@@ -29,6 +28,7 @@ export const Route = createFileRoute("/_authed/app/projects/$projectId")({
 function ProjectDetail() {
 	const { project, sessions, secrets } = Route.useLoaderData();
 	const router = useRouter();
+	const [showSecrets, setShowSecrets] = useState(false);
 	const [showSecretForm, setShowSecretForm] = useState(false);
 	const [secretKey, setSecretKey] = useState("");
 	const [secretValue, setSecretValue] = useState("");
@@ -36,11 +36,6 @@ function ProjectDetail() {
 
 	const createSessionMutation = useMutation({
 		mutationFn: () => createNewSession({ data: project.id }),
-		onSuccess: () => router.invalidate(),
-	});
-
-	const deleteSessionMutation = useMutation({
-		mutationFn: (id: string) => removeSession({ data: id }),
 		onSuccess: () => router.invalidate(),
 	});
 
@@ -69,12 +64,6 @@ function ProjectDetail() {
 		e.preventDefault();
 		if (!secretKey.trim() || !secretValue.trim()) return;
 		addSecretMutation.mutate({ key: secretKey, value: secretValue });
-	};
-
-	const handleDeleteSession = (id: string) => {
-		if (!confirm("Are you sure you want to terminate this session?"))
-			return;
-		deleteSessionMutation.mutate(id);
 	};
 
 	const getStatusBadgeClass = (status: string) => {
@@ -131,18 +120,11 @@ function ProjectDetail() {
 
 			{/* Project Header */}
 			<div className="mb-8">
-				<h2 className="font-bold text-2xl tracking-tight">
-					{project.name}
-				</h2>
+				<h2 className="font-bold text-2xl tracking-tight">{project.name}</h2>
 				<p className="text-sm font-mono text-text-secondary mt-1">
-					{project.githubUrl
-						.replace(/^https?:\/\//, "")
-						.replace(/\.git$/, "")}
+					{project.githubUrl.replace(/^https?:\/\//, "").replace(/\.git$/, "")}
 					{project.branch && (
-						<span className="text-text-muted">
-							{" "}
-							/ {project.branch}
-						</span>
+						<span className="text-text-muted"> / {project.branch}</span>
 					)}
 				</p>
 				{project.description && (
@@ -150,19 +132,115 @@ function ProjectDetail() {
 						{project.description}
 					</p>
 				)}
+				<button
+					type="button"
+					onClick={() => setShowSecrets(!showSecrets)}
+					className="mt-3 inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-text transition-colors duration-150"
+				>
+					<span className="font-mono text-xs">{showSecrets ? "▾" : "▸"}</span>
+					Environment Variables
+					{secrets.length > 0 && (
+						<span className="text-xs text-text-muted">({secrets.length})</span>
+					)}
+				</button>
 			</div>
 
+			{/* Secrets Section (collapsible) */}
+			{showSecrets && (
+				<div className="bg-bg-secondary border border-border-light shadow-sm mb-8">
+					<div className="px-6 py-4 border-b border-border-light flex items-center justify-between">
+						<p className="text-xs text-text-muted">
+							Encrypted at rest. Injected into sandbox sessions.
+						</p>
+						<button
+							type="button"
+							onClick={() => setShowSecretForm(!showSecretForm)}
+							className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold font-mono uppercase tracking-wide bg-accent text-bg-secondary hover:bg-accent-hover transition-colors duration-150"
+						>
+							{showSecretForm ? "CANCEL" : "ADD SECRET"}
+						</button>
+					</div>
+
+					{showSecretForm && (
+						<div className="px-6 py-5 border-b border-border-light">
+							<form onSubmit={handleAddSecret} className="flex gap-3 items-end">
+								<div className="flex-1">
+									<label className="block mb-1.5 text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary">
+										Key
+									</label>
+									<input
+										type="text"
+										value={secretKey}
+										onChange={(e) => setSecretKey(e.target.value.toUpperCase())}
+										placeholder="DATABASE_URL"
+										className="w-full px-3 py-2 text-sm border border-border-light bg-bg-secondary text-text font-mono focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-150"
+										required
+									/>
+								</div>
+								<div className="flex-1">
+									<label className="block mb-1.5 text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary">
+										Value
+									</label>
+									<input
+										type="password"
+										value={secretValue}
+										onChange={(e) => setSecretValue(e.target.value)}
+										placeholder="secret-value"
+										className="w-full px-3 py-2 text-sm border border-border-light bg-bg-secondary text-text font-mono focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-150"
+										required
+									/>
+								</div>
+								<button
+									type="submit"
+									disabled={addSecretMutation.isPending}
+									className="px-4 py-2 text-sm font-semibold font-mono uppercase tracking-wide bg-accent text-bg-secondary hover:bg-accent-hover disabled:opacity-50 transition-colors duration-150"
+								>
+									{addSecretMutation.isPending ? "..." : "ADD"}
+								</button>
+							</form>
+						</div>
+					)}
+
+					{secrets.length === 0 ? (
+						<div className="px-6 py-8 text-center text-text-muted text-sm">
+							No environment variables configured.
+						</div>
+					) : (
+						<div>
+							{secrets.map((secret) => (
+								<div
+									key={secret.id}
+									className="px-6 py-3 border-b border-border-light last:border-b-0 flex items-center justify-between"
+								>
+									<span className="font-mono text-sm">{secret.key}</span>
+									<div className="flex items-center gap-3">
+										<span className="text-text-muted text-sm font-mono">
+											••••••••
+										</span>
+										<button
+											type="button"
+											onClick={() => removeSecretMutation.mutate(secret.id)}
+											className="text-error/70 hover:text-error text-sm transition-colors duration-150"
+										>
+											Remove
+										</button>
+									</div>
+								</div>
+							))}
+						</div>
+					)}
+				</div>
+			)}
+
 			{/* Sessions Section */}
-			<div className="bg-bg-secondary border border-border-light shadow-sm mb-8">
-				<div className="px-6 py-5 border-b border-border-light flex items-center justify-between">
-					<h3 className="font-semibold text-lg">Sessions</h3>
+			<div className="mb-8">
+				<div className="flex items-center justify-between mb-4">
 					<div className="flex items-center gap-3">
+						<h3 className="font-semibold text-lg">Sessions</h3>
 						{terminatedCount > 0 && (
 							<button
 								type="button"
-								onClick={() =>
-									setShowTerminated(!showTerminated)
-								}
+								onClick={() => setShowTerminated(!showTerminated)}
 								className="text-xs font-mono text-text-muted hover:text-text-secondary transition-colors duration-150"
 							>
 								{showTerminated
@@ -170,207 +248,64 @@ function ProjectDetail() {
 									: `Show terminated (${terminatedCount})`}
 							</button>
 						)}
-						<button
-							type="button"
-							onClick={() => createSessionMutation.mutate()}
-							disabled={createSessionMutation.isPending}
-							className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold font-mono uppercase tracking-wide bg-accent text-bg-secondary hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
-						>
-							{createSessionMutation.isPending
-								? "CREATING..."
-								: "NEW SESSION"}
-						</button>
-					</div>
-				</div>
-
-				{filtered.length === 0 ? (
-					<div className="px-6 py-12 text-center text-text-muted">
-						No sessions yet. Create one to start working.
-					</div>
-				) : (
-					<div className="overflow-x-auto">
-						<table className="w-full border-collapse">
-							<thead>
-								<tr>
-									<th className="text-left px-6 py-3.5 text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary bg-bg-tertiary border-b border-border-light">
-										Session
-									</th>
-									<th className="text-left px-6 py-3.5 text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary bg-bg-tertiary border-b border-border-light">
-										Status
-									</th>
-									<th className="text-left px-6 py-3.5 text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary bg-bg-tertiary border-b border-border-light">
-										Last Snapshot
-									</th>
-									<th className="text-left px-6 py-3.5 text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary bg-bg-tertiary border-b border-border-light">
-										Created
-									</th>
-									<th className="text-right px-6 py-3.5 text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary bg-bg-tertiary border-b border-border-light">
-										Actions
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								{filtered.map((session) => (
-									<tr
-										key={session.id}
-										className="border-b border-border-light last:border-b-0 hover:bg-bg-tertiary transition-colors duration-150"
-									>
-										<td className="px-6 py-4 text-sm">
-											<Link
-												to="/app/projects/$projectId/sessions/$sessionId"
-												params={{
-													projectId: project.id,
-													sessionId: session.id,
-												}}
-												className="font-semibold text-link hover:text-link-hover transition-colors duration-150 font-mono"
-											>
-												{session.id.slice(0, 8)}...
-											</Link>
-										</td>
-										<td className="px-6 py-4 whitespace-nowrap">
-											<span
-												className={`inline-flex items-center px-2.5 py-1 text-xs font-semibold font-mono uppercase tracking-wide border ${getStatusBadgeClass(session.status)}`}
-											>
-												{session.status}
-											</span>
-										</td>
-										<td className="px-6 py-4 text-sm text-text-secondary whitespace-nowrap">
-											{session.lastSnapshotAt
-												? new Date(
-														session.lastSnapshotAt,
-													).toLocaleString()
-												: "None"}
-										</td>
-										<td className="px-6 py-4 text-sm text-text-secondary whitespace-nowrap">
-											{new Date(
-												session.createdAt,
-											).toLocaleDateString()}
-										</td>
-										<td className="px-6 py-4 text-right whitespace-nowrap">
-											{session.status !== "terminated" && (
-												<button
-													type="button"
-													onClick={() =>
-														handleDeleteSession(
-															session.id,
-														)
-													}
-													className="text-error/70 hover:text-error underline underline-offset-2 text-sm transition-colors duration-150"
-												>
-													Terminate
-												</button>
-											)}
-										</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
-					</div>
-				)}
-			</div>
-
-			{/* Secrets Section */}
-			<div className="bg-bg-secondary border border-border-light shadow-sm">
-				<div className="px-6 py-5 border-b border-border-light flex items-center justify-between">
-					<div>
-						<h3 className="font-semibold text-lg">
-							Environment Variables
-						</h3>
-						<p className="text-xs text-text-muted mt-1">
-							Encrypted at rest. Injected into sandbox sessions.
-						</p>
 					</div>
 					<button
 						type="button"
-						onClick={() => setShowSecretForm(!showSecretForm)}
-						className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold font-mono uppercase tracking-wide bg-accent text-bg-secondary hover:bg-accent-hover transition-colors duration-150"
+						onClick={() => createSessionMutation.mutate()}
+						disabled={createSessionMutation.isPending}
+						className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold font-mono uppercase tracking-wide bg-accent text-bg-secondary hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
 					>
-						{showSecretForm ? "CANCEL" : "ADD SECRET"}
+						{createSessionMutation.isPending ? "CREATING..." : "NEW SESSION"}
 					</button>
 				</div>
 
-				{showSecretForm && (
-					<div className="px-6 py-5 border-b border-border-light">
-						<form
-							onSubmit={handleAddSecret}
-							className="flex gap-3 items-end"
-						>
-							<div className="flex-1">
-								<label className="block mb-1.5 text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary">
-									Key
-								</label>
-								<input
-									type="text"
-									value={secretKey}
-									onChange={(e) =>
-										setSecretKey(
-											e.target.value.toUpperCase(),
-										)
-									}
-									placeholder="DATABASE_URL"
-									className="w-full px-3 py-2 text-sm border border-border-light bg-bg-secondary text-text font-mono focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-150"
-									required
-								/>
-							</div>
-							<div className="flex-1">
-								<label className="block mb-1.5 text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary">
-									Value
-								</label>
-								<input
-									type="password"
-									value={secretValue}
-									onChange={(e) =>
-										setSecretValue(e.target.value)
-									}
-									placeholder="secret-value"
-									className="w-full px-3 py-2 text-sm border border-border-light bg-bg-secondary text-text font-mono focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-150"
-									required
-								/>
-							</div>
-							<button
-								type="submit"
-								disabled={addSecretMutation.isPending}
-								className="px-4 py-2 text-sm font-semibold font-mono uppercase tracking-wide bg-accent text-bg-secondary hover:bg-accent-hover disabled:opacity-50 transition-colors duration-150"
-							>
-								{addSecretMutation.isPending
-									? "..."
-									: "ADD"}
-							</button>
-						</form>
-					</div>
-				)}
-
-				{secrets.length === 0 ? (
-					<div className="px-6 py-8 text-center text-text-muted text-sm">
-						No environment variables configured.
+				{filtered.length === 0 ? (
+					<div className="bg-bg-secondary border border-border-light rounded-lg shadow-sm px-6 py-12 text-center text-text-muted">
+						No sessions yet. Create one to start working.
 					</div>
 				) : (
-					<div>
-						{secrets.map((secret) => (
-							<div
-								key={secret.id}
-								className="px-6 py-3 border-b border-border-light last:border-b-0 flex items-center justify-between"
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+						{filtered.map((session) => (
+							<Link
+								key={session.id}
+								to="/app/projects/$projectId/sessions/$sessionId"
+								params={{
+									projectId: project.id,
+									sessionId: session.id,
+								}}
+								className="bg-bg-secondary border border-border-light shadow-sm p-5 hover:border-accent/40 transition-colors duration-150 flex flex-col gap-3"
 							>
-								<span className="font-mono text-sm">
-									{secret.key}
-								</span>
-								<div className="flex items-center gap-3">
-									<span className="text-text-muted text-sm font-mono">
-										••••••••
-									</span>
-									<button
-										type="button"
-										onClick={() =>
-											removeSecretMutation.mutate(
-												secret.id,
-											)
-										}
-										className="text-error/70 hover:text-error text-sm transition-colors duration-150"
-									>
-										Remove
-									</button>
+								<p className="font-mono text-sm font-semibold">
+									{session.id.slice(0, 8)}
+								</p>
+								<div className="text-xs text-text-muted space-y-0.5">
+									<p>
+										Created {new Date(session.createdAt).toLocaleDateString()}
+									</p>
+									{session.lastSnapshotAt && (
+										<p>
+											Snapshot{" "}
+											{new Date(session.lastSnapshotAt).toLocaleString()}
+										</p>
+									)}
 								</div>
-							</div>
+								<span
+									className={`inline-flex items-center self-start px-2.5 py-1 text-xs font-semibold font-mono uppercase tracking-wide border rounded ${getStatusBadgeClass(session.status)}`}
+								>
+									{session.status}
+								</span>
+								{session.status === "running" && session.opencodeUrl && (
+									<span
+										onClick={(e) => {
+											e.preventDefault();
+											window.open(session.opencodeUrl!, "_blank");
+										}}
+										className="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold font-mono uppercase tracking-wide bg-accent text-bg-secondary hover:bg-accent-hover transition-colors duration-150 mt-1"
+									>
+										Open Sandbox
+									</span>
+								)}
+							</Link>
 						))}
 					</div>
 				)}
