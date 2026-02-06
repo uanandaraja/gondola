@@ -1,6 +1,7 @@
 import {
 	createRootRoute,
 	HeadContent,
+	Link,
 	Outlet,
 	Scripts,
 } from "@tanstack/react-router";
@@ -17,7 +18,23 @@ export const Route = createRootRoute({
 		],
 	}),
 	component: RootComponent,
+	notFoundComponent: NotFound,
 });
+
+function NotFound() {
+	return (
+		<div className="w-full max-w-[1000px] mx-auto px-6 py-10 md:px-10 md:py-14 text-center">
+			<h1 className="font-bold text-3xl tracking-tight mb-2">404</h1>
+			<p className="text-text-secondary mb-6">Page not found.</p>
+			<Link
+				to="/"
+				className="text-link underline underline-offset-2 hover:text-link-hover text-sm transition-colors duration-150"
+			>
+				← Back to Dashboard
+			</Link>
+		</div>
+	);
+}
 
 function RootComponent() {
 	return (

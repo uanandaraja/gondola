@@ -24,48 +24,50 @@ function SandboxDetail() {
 	const getStatusBadgeClass = (status: string) => {
 		switch (status) {
 			case "running":
-				return "bg-bg-secondary border-border";
+				return "bg-success/10 text-success border-success/30";
 			case "creating":
-				return "bg-bg-tertiary border-border";
+				return "bg-warning/10 text-warning border-warning/30";
 			case "error":
-				return "bg-text text-bg-secondary border-text";
+				return "bg-error/10 text-error border-error/30";
 			case "terminated":
-				return "";
+				return "bg-bg-tertiary text-text-muted border-border-light";
 			default:
-				return "";
+				return "bg-bg-tertiary text-text-muted border-border-light";
 		}
 	};
 
 	return (
-		<div className="w-full max-w-[1200px] mx-auto p-4 md:p-6">
-			<div className="mb-6">
+		<div className="w-full max-w-[1000px] mx-auto px-6 py-10 md:px-10 md:py-14">
+			<div className="mb-8">
 				<Link
 					to="/"
-					className="text-link underline underline-offset-2 hover:text-link-hover text-sm transition-colors duration-150"
+					className="text-text-secondary hover:text-text text-sm transition-colors duration-150"
 				>
 					← Back to Dashboard
 				</Link>
 			</div>
 
-			<div className="bg-bg-secondary border border-border shadow-[2px_2px_0_0_rgba(0,0,0,0.1)]">
-				<div className="p-4 md:p-6">
-					<div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-6">
+			<div className="bg-bg-secondary border border-border-light shadow-sm">
+				<div className="px-6 py-6 md:px-8 md:py-8">
+					<div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-8">
 						<div>
-							<h1 className="font-bold mb-2 text-[1.5rem]">SANDBOX DETAILS</h1>
+							<h1 className="font-bold text-2xl tracking-tight mb-1">
+								Sandbox Details
+							</h1>
 							<p className="font-mono text-sm text-text-secondary">
 								{sandbox.id}
 							</p>
 						</div>
 						<span
-							className={`inline-flex items-center px-2 py-1 text-xs font-semibold font-mono uppercase tracking-wide border ${getStatusBadgeClass(sandbox.status)}`}
+							className={`inline-flex items-center px-2.5 py-1 text-xs font-semibold font-mono uppercase tracking-wide border ${getStatusBadgeClass(sandbox.status)}`}
 						>
 							{sandbox.status}
 						</span>
 					</div>
 
-					<div className="space-y-0">
+					<div>
 						<div className="py-4 border-b border-border-light">
-							<div className="text-sm font-semibold text-text-secondary mb-1">
+							<div className="text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary mb-1.5">
 								Git URL
 							</div>
 							<div className="text-sm font-mono break-all">
@@ -74,14 +76,14 @@ function SandboxDetail() {
 						</div>
 
 						<div className="py-4 border-b border-border-light">
-							<div className="text-sm font-semibold text-text-secondary mb-1">
+							<div className="text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary mb-1.5">
 								Branch
 							</div>
 							<div className="text-sm">{sandbox.branch || "default"}</div>
 						</div>
 
 						<div className="py-4 border-b border-border-light">
-							<div className="text-sm font-semibold text-text-secondary mb-1">
+							<div className="text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary mb-1.5">
 								Modal Sandbox ID
 							</div>
 							<div className="text-sm font-mono break-all">
@@ -90,7 +92,7 @@ function SandboxDetail() {
 						</div>
 
 						<div className="py-4 border-b border-border-light">
-							<div className="text-sm font-semibold text-text-secondary mb-1">
+							<div className="text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary mb-1.5">
 								Created At
 							</div>
 							<div className="text-sm">
@@ -99,7 +101,7 @@ function SandboxDetail() {
 						</div>
 
 						<div className="py-4">
-							<div className="text-sm font-semibold text-text-secondary mb-1">
+							<div className="text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary mb-1.5">
 								OpenCode URL
 							</div>
 							<div>
@@ -115,18 +117,18 @@ function SandboxDetail() {
 						</div>
 					</div>
 
-					<div className="mt-8 flex flex-col md:flex-row gap-4">
+					<div className="mt-8 pt-6 border-t border-border-light flex flex-col md:flex-row gap-3">
 						<a
 							href={sandbox.opencodeUrl}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold font-mono uppercase tracking-wide bg-accent border border-accent text-bg-secondary hover:bg-accent-hover md:w-auto w-full transition-colors duration-150"
+							className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold font-mono uppercase tracking-wide bg-accent text-bg-secondary hover:bg-accent-hover md:w-auto w-full transition-colors duration-150"
 						>
 							OPEN IN OPENCODE ↗
 						</a>
 						<button
 							onClick={handleDelete}
-							className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold font-mono uppercase tracking-wide bg-error border border-error text-bg-secondary hover:opacity-80 md:w-auto w-full transition-opacity duration-150"
+							className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold font-mono uppercase tracking-wide bg-bg-secondary border border-error/50 text-error hover:bg-error/5 md:w-auto w-full transition-colors duration-150"
 						>
 							DELETE SANDBOX
 						</button>
