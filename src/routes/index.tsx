@@ -168,7 +168,7 @@ function Dashboard() {
 											</span>
 										</td>
 										<td className="p-3 md:p-4 text-sm text-secondary whitespace-nowrap">
-											{new Date(sandbox.createdAt).toLocaleDateString()}
+											{sandbox.createdAt.toISOString().split("T")[0]}
 										</td>
 										<td className="p-3 md:p-4 text-right whitespace-nowrap">
 											<button

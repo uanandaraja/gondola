@@ -5,7 +5,7 @@ import {
 	Scripts,
 } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import appCss from "../styles/app.css?url";
+import "../styles/app.css";
 
 export const Route = createRootRoute({
 	head: () => ({
@@ -15,7 +15,6 @@ export const Route = createRootRoute({
 			{ title: "Gondola" },
 			{ name: "description", content: "Cloud dev sandbox manager" },
 		],
-		links: [{ rel: "stylesheet", href: appCss }],
 	}),
 	component: RootComponent,
 });
