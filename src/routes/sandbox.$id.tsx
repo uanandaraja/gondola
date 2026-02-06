@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
+import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { fetchSandbox, removeSandbox } from "../server/functions";
 
 export const Route = createFileRoute("/sandbox/$id")({
@@ -15,10 +16,20 @@ export const Route = createFileRoute("/sandbox/$id")({
 function SandboxDetail() {
 	const sandbox = Route.useLoaderData();
 
-	const handleDelete = async () => {
+	const router = useRouter();
+	const navigate = useNavigate();
+
+	const deleteMutation = useMutation({
+		mutationFn: () => removeSandbox({ data: sandbox.id }),
+		onSuccess: () => {
+			router.invalidate();
+			navigate({ to: "/" });
+		},
+	});
+
+	const handleDelete = () => {
 		if (!confirm("Are you sure you want to delete this sandbox?")) return;
-		await removeSandbox({ data: sandbox.id });
-		window.location.href = "/";
+		deleteMutation.mutate();
 	};
 
 	const getStatusBadgeClass = (status: string) => {
