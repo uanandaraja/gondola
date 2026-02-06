@@ -23,7 +23,7 @@ function SandboxDetail() {
 		mutationFn: () => removeSandbox({ data: sandbox.id }),
 		onSuccess: () => {
 			router.invalidate();
-			navigate({ to: "/" });
+			navigate({ to: "/app" });
 		},
 	});
 
@@ -51,7 +51,7 @@ function SandboxDetail() {
 		<div className="w-full max-w-[1000px] mx-auto px-6 py-10 md:px-10 md:py-14">
 			<div className="mb-8">
 				<Link
-					to="/"
+					to="/app"
 					className="text-text-secondary hover:text-text text-sm transition-colors duration-150"
 				>
 					&larr; Back to Dashboard

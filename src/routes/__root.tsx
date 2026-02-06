@@ -18,7 +18,12 @@ export const Route = createRootRoute({
 			{ title: "Gondola" },
 			{ name: "description", content: "Cloud dev sandbox manager" },
 		],
-		links: [{ rel: "stylesheet", href: appCss }],
+		links: [
+			{ rel: "preconnect", href: "https://fonts.googleapis.com" },
+			{ rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+			{ rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" },
+			{ rel: "stylesheet", href: appCss },
+		],
 	}),
 	component: RootComponent,
 	notFoundComponent: NotFound,
@@ -30,7 +35,7 @@ function NotFound() {
 			<h1 className="font-bold text-3xl tracking-tight mb-2">404</h1>
 			<p className="text-text-secondary mb-6">Page not found.</p>
 			<Link
-				to="/"
+				to="/app"
 				className="text-link underline underline-offset-2 hover:text-link-hover text-sm transition-colors duration-150"
 			>
 				← Back to Dashboard

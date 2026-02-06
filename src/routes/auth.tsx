@@ -9,7 +9,7 @@ function AuthPage() {
 	const handleGitHubSignIn = () => {
 		signIn.social({
 			provider: "github",
-			callbackURL: "/",
+			callbackURL: "/app",
 		});
 	};
 

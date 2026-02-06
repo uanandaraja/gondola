@@ -23,7 +23,7 @@ function AuthedLayout() {
 		signOut({
 			fetchOptions: {
 				onSuccess: () => {
-					router.navigate({ to: "/auth" });
+					router.navigate({ to: "/" });
 				},
 			},
 		});

@@ -7,7 +7,7 @@ import {
 	removeSandbox,
 } from "../../server/functions";
 
-export const Route = createFileRoute("/_authed/")({
+export const Route = createFileRoute("/_authed/app")({
 	loader: async () => {
 		return await fetchSandboxes();
 	},
@@ -25,7 +25,7 @@ function Dashboard() {
 		if (a.status === "running" && b.status !== "running") return -1;
 		if (a.status !== "running" && b.status === "running") return 1;
 		return 0;
-	});
+	})
 	const filtered = showTerminated
 		? sorted
 		: sorted.filter((s) => s.status !== "terminated");
@@ -41,23 +41,23 @@ function Dashboard() {
 			setBranch("");
 			router.invalidate();
 		},
-	});
+	})
 
 	const deleteMutation = useMutation({
 		mutationFn: (id: string) => removeSandbox({ data: id }),
 		onSuccess: () => router.invalidate(),
-	});
+	})
 
 	const handleCreate = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!gitUrl.trim()) return;
 		createMutation.mutate({ gitUrl, branch: branch || undefined });
-	};
+	}
 
 	const handleDelete = (id: string) => {
 		if (!confirm("Are you sure you want to delete this sandbox?")) return;
 		deleteMutation.mutate(id);
-	};
+	}
 
 	const getStatusBadgeClass = (status: string) => {
 		switch (status) {
@@ -72,11 +72,11 @@ function Dashboard() {
 			default:
 				return "bg-bg-tertiary text-text-muted border-border-light";
 		}
-	};
+	}
 
 	return (
-		<div className="w-full max-w-[1000px] mx-auto px-6 py-8 md:px-10 md:py-10">
-			<div className="bg-bg-secondary border border-border-light shadow-sm mb-10">
+        <div className="w-full max-w-[1000px] mx-auto px-6 py-8 md:px-10 md:py-10">
+            <div className="bg-bg-secondary border border-border-light shadow-sm mb-10">
 				<div className="px-6 py-5 border-b border-border-light">
 					<h2 className="font-semibold text-lg">Create New Sandbox</h2>
 				</div>
@@ -119,8 +119,7 @@ function Dashboard() {
 					</form>
 				</div>
 			</div>
-
-			<div className="bg-bg-secondary border border-border-light shadow-sm">
+            <div className="bg-bg-secondary border border-border-light shadow-sm">
 				<div className="px-6 py-5 border-b border-border-light flex items-center justify-between">
 					<h2 className="font-semibold text-lg">Sandboxes</h2>
 					{terminatedCount > 0 && (
@@ -205,6 +204,6 @@ function Dashboard() {
 					</div>
 				)}
 			</div>
-		</div>
-	);
+        </div>
+    )
 }
