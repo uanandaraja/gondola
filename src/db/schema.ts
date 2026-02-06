@@ -61,6 +61,7 @@ export const verification = pgTable("verification", {
 
 // ── App tables ──────────────────────────────────────────────────────
 
+// Keep old sandbox tables for migration compatibility (will be removed later)
 export const sandboxStatusEnum = pgEnum("sandbox_status", [
 	"creating",
 	"running",
@@ -83,5 +84,76 @@ export const sandboxes = pgTable("sandboxes", {
 		.defaultNow(),
 });
 
-export type SandboxRecord = typeof sandboxes.$inferSelect;
-export type NewSandboxRecord = typeof sandboxes.$inferInsert;
+// ── Projects ────────────────────────────────────────────────────────
+
+export const projects = pgTable("projects", {
+	id: uuid("id").primaryKey().defaultRandom(),
+	userId: text("user_id")
+		.notNull()
+		.references(() => user.id, { onDelete: "cascade" }),
+	name: text("name").notNull(),
+	githubUrl: text("github_url").notNull(),
+	branch: text("branch"),
+	description: text("description"),
+	createdAt: timestamp("created_at", { withTimezone: true })
+		.notNull()
+		.defaultNow(),
+	updatedAt: timestamp("updated_at", { withTimezone: true })
+		.notNull()
+		.defaultNow(),
+});
+
+export type ProjectRecord = typeof projects.$inferSelect;
+export type NewProjectRecord = typeof projects.$inferInsert;
+
+// ── Project Secrets ─────────────────────────────────────────────────
+
+export const projectSecrets = pgTable("project_secrets", {
+	id: uuid("id").primaryKey().defaultRandom(),
+	projectId: uuid("project_id")
+		.notNull()
+		.references(() => projects.id, { onDelete: "cascade" }),
+	key: text("key").notNull(),
+	encryptedValue: text("encrypted_value").notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true })
+		.notNull()
+		.defaultNow(),
+	updatedAt: timestamp("updated_at", { withTimezone: true })
+		.notNull()
+		.defaultNow(),
+});
+
+export type ProjectSecretRecord = typeof projectSecrets.$inferSelect;
+export type NewProjectSecretRecord = typeof projectSecrets.$inferInsert;
+
+// ── Sessions ────────────────────────────────────────────────────────
+
+export const sessionStatusEnum = pgEnum("session_status", [
+	"creating",
+	"running",
+	"snapshotting",
+	"suspended",
+	"error",
+	"terminated",
+]);
+
+export const sessions = pgTable("sessions", {
+	id: uuid("id").primaryKey().defaultRandom(),
+	projectId: uuid("project_id")
+		.notNull()
+		.references(() => projects.id, { onDelete: "cascade" }),
+	modalSandboxId: text("modal_sandbox_id"),
+	opencodeUrl: text("opencode_url"),
+	status: sessionStatusEnum("status").notNull().default("creating"),
+	latestSnapshotImageId: text("latest_snapshot_image_id"),
+	lastSnapshotAt: timestamp("last_snapshot_at", { withTimezone: true }),
+	createdAt: timestamp("created_at", { withTimezone: true })
+		.notNull()
+		.defaultNow(),
+	updatedAt: timestamp("updated_at", { withTimezone: true })
+		.notNull()
+		.defaultNow(),
+});
+
+export type SessionRecord = typeof sessions.$inferSelect;
+export type NewSessionRecord = typeof sessions.$inferInsert;

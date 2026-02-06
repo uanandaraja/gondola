@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, redirect, useRouter } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "../hooks/useTheme";
 import { signOut, useSession } from "../services/auth/client";
@@ -85,7 +85,7 @@ function AuthedLayout() {
 		<>
 			<header className="border-b border-border-light bg-bg-secondary">
 				<div className="w-full max-w-[1000px] mx-auto px-6 md:px-10 flex items-center justify-between h-14">
-					<h1 className="font-bold text-lg tracking-tight">GONDOLA</h1>
+					<Link to="/app" className="font-bold text-lg tracking-tight hover:opacity-80 transition-opacity duration-150">GONDOLA</Link>
 					<div className="flex items-center gap-4">
 						<button
 							type="button"
