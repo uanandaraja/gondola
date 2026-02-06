@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Tell Tailwind where to scan for classes */
+@source "../routes";
+@source "../components";
+
 @theme {
   /* Colors using CSS variables */
   --color-bg: #f5f5f5;
