@@ -13,13 +13,7 @@
 
 // Inline imports with versions (Railway Functions will auto-install these)
 import { sql } from "drizzle-orm@0.45.1";
-import {
-	pgEnum,
-	pgTable,
-	text,
-	timestamp,
-	uuid,
-} from "drizzle-orm@0.45.1/pg-core";
+import { pgTable, text, timestamp, uuid } from "drizzle-orm@0.45.1/pg-core";
 import { drizzle } from "drizzle-orm@0.45.1/postgres";
 import { ModalClient } from "modal@0.6.1";
 import postgres from "postgres@3.4.8";
@@ -42,23 +36,13 @@ if (!DATABASE_URL) {
 
 // ── Inline Schema Definition ────────────────────────────────────────
 
-// Status enum values
-const sessionStatusEnum = pgEnum("session_status", [
-	"creating",
-	"running",
-	"snapshotting",
-	"suspended",
-	"error",
-	"terminated",
-]);
-
-// Sessions table schema
+// Sessions table schema (simplified - status as text to avoid enum issues)
 const sessions = pgTable("sessions", {
 	id: uuid("id").primaryKey().defaultRandom(),
 	projectId: uuid("project_id").notNull(),
 	modalSandboxId: text("modal_sandbox_id"),
 	opencodeUrl: text("opencode_url"),
-	status: sessionStatusEnum("status").notNull().default("creating"),
+	status: text("status").notNull().default("creating"),
 	latestSnapshotImageId: text("latest_snapshot_image_id"),
 	lastSnapshotAt: timestamp("last_snapshot_at", { withTimezone: true }),
 	createdAt: timestamp("created_at", { withTimezone: true })
