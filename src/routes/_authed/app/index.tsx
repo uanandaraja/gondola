@@ -157,49 +157,57 @@ function ProjectList() {
 				</div>
 			) : (
 				<div className="grid gap-4">
-					{projects.map((project) => (
-						<div
-							key={project.id}
-							className="bg-bg-secondary border border-border-light shadow-sm hover:border-accent/30 transition-colors duration-150"
-						>
-							<div className="px-6 py-5 flex items-start justify-between">
-								<Link
-									to="/app/projects/$projectId"
-									params={{ projectId: project.id }}
-									className="flex-1 min-w-0"
-								>
-									<h3 className="font-semibold text-lg hover:text-accent transition-colors duration-150">
-										{project.name}
-									</h3>
-									<p className="text-sm font-mono text-text-secondary mt-1 truncate">
-										{project.githubUrl
-											.replace(/^https?:\/\//, "")
-											.replace(/\.git$/, "")}
-									</p>
-									{project.branch && (
-										<p className="text-xs text-text-muted mt-1">
-											Branch: {project.branch}
+					{projects
+						.slice()
+						.sort(
+							(a, b) =>
+								new Date(b.createdAt).getTime() -
+								new Date(a.createdAt).getTime(),
+						)
+						.map((project) => (
+							<div
+								key={project.id}
+								className="bg-bg-secondary border border-border-light shadow-sm hover:border-accent/30 transition-colors duration-150"
+							>
+								<div className="px-6 py-5 flex items-start justify-between">
+									<Link
+										to="/app/projects/$projectId"
+										params={{ projectId: project.id }}
+										className="flex-1 min-w-0"
+									>
+										<h3 className="font-semibold text-lg hover:text-accent transition-colors duration-150">
+											{project.name}
+										</h3>
+										<p className="text-sm font-mono text-text-secondary mt-1 truncate">
+											{project.githubUrl
+												.replace(/^https?:\/\//, "")
+												.replace(/\.git$/, "")}
 										</p>
-									)}
-									{project.description && (
-										<p className="text-sm text-text-secondary mt-2">
-											{project.description}
-										</p>
-									)}
-									<div className="flex items-center gap-3 mt-2 text-xs text-text-muted">
-										<span>
-											{project.activeSessions}{" "}
-											{project.activeSessions === 1 ? "session" : "sessions"}
-										</span>
-										<span>&middot;</span>
-										<span>
-											Created {new Date(project.createdAt).toLocaleDateString()}
-										</span>
-									</div>
-								</Link>
+										{project.branch && (
+											<p className="text-xs text-text-muted mt-1">
+												Branch: {project.branch}
+											</p>
+										)}
+										{project.description && (
+											<p className="text-sm text-text-secondary mt-2">
+												{project.description}
+											</p>
+										)}
+										<div className="flex items-center gap-3 mt-2 text-xs text-text-muted">
+											<span>
+												{project.activeSessions}{" "}
+												{project.activeSessions === 1 ? "session" : "sessions"}
+											</span>
+											<span>&middot;</span>
+											<span>
+												Created{" "}
+												{new Date(project.createdAt).toLocaleDateString()}
+											</span>
+										</div>
+									</Link>
+								</div>
 							</div>
-						</div>
-					))}
+						))}
 				</div>
 			)}
 		</div>
