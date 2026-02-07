@@ -324,7 +324,9 @@ function ProjectDetail() {
 										setBulkEnv(e.target.value);
 										setBulkError("");
 									}}
-									placeholder={"DATABASE_URL=postgres://...\nAPI_KEY=sk-...\n# Comments are ignored"}
+									placeholder={
+										"DATABASE_URL=postgres://...\nAPI_KEY=sk-...\n# Comments are ignored"
+									}
 									rows={8}
 									className="w-full px-3 py-2 text-sm border border-border-light bg-bg-secondary text-text font-mono focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-150 resize-y"
 									required
@@ -334,10 +336,12 @@ function ProjectDetail() {
 								)}
 								<div className="flex items-center justify-between">
 									<p className="text-xs text-text-muted">
-										{bulkEnv
-											.split("\n")
-											.filter((l) => l.trim() && !l.trim().startsWith("#"))
-											.length}{" "}
+										{
+											bulkEnv
+												.split("\n")
+												.filter((l) => l.trim() && !l.trim().startsWith("#"))
+												.length
+										}{" "}
 										entries detected
 									</p>
 									<button
@@ -382,7 +386,6 @@ function ProjectDetail() {
 												value={editValue}
 												onChange={(e) => setEditValue(e.target.value)}
 												className="flex-1 px-3 py-1.5 text-sm border border-border-light bg-bg-secondary text-text font-mono focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-150"
-												autoFocus
 											/>
 											<button
 												type="submit"
@@ -421,9 +424,7 @@ function ProjectDetail() {
 												</button>
 												<button
 													type="button"
-													onClick={() =>
-														removeSecretMutation.mutate(secret.id)
-													}
+													onClick={() => removeSecretMutation.mutate(secret.id)}
 													className="text-error/70 hover:text-error text-sm transition-colors duration-150"
 												>
 													Remove
@@ -512,9 +513,7 @@ function ProjectDetail() {
 										session.latestSnapshotImageId && (
 											<button
 												type="button"
-												onClick={() =>
-													resumeSessionMutation.mutate(session.id)
-												}
+												onClick={() => resumeSessionMutation.mutate(session.id)}
 												disabled={resumeSessionMutation.isPending}
 												className="flex-1 inline-flex items-center justify-center px-4 py-2 text-xs font-semibold font-mono uppercase tracking-wide border border-accent text-accent hover:bg-accent hover:text-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
 											>

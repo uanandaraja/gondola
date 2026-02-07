@@ -31,9 +31,7 @@ export async function getProject(
 	const result = await db
 		.select()
 		.from(schema.projects)
-		.where(
-			and(eq(schema.projects.id, id), eq(schema.projects.userId, userId)),
-		)
+		.where(and(eq(schema.projects.id, id), eq(schema.projects.userId, userId)))
 		.limit(1);
 	return result[0];
 }
@@ -80,20 +78,13 @@ export async function updateProject(
 	const [updated] = await db
 		.update(schema.projects)
 		.set({ ...updates, updatedAt: new Date() })
-		.where(
-			and(eq(schema.projects.id, id), eq(schema.projects.userId, userId)),
-		)
+		.where(and(eq(schema.projects.id, id), eq(schema.projects.userId, userId)))
 		.returning();
 	return updated;
 }
 
-export async function deleteProject(
-	id: string,
-	userId: string,
-): Promise<void> {
+export async function deleteProject(id: string, userId: string): Promise<void> {
 	await db
 		.delete(schema.projects)
-		.where(
-			and(eq(schema.projects.id, id), eq(schema.projects.userId, userId)),
-		);
+		.where(and(eq(schema.projects.id, id), eq(schema.projects.userId, userId)));
 }

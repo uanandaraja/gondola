@@ -67,11 +67,15 @@ function SessionDetail() {
 			setIsResuming(true);
 			resumeMutation.mutate();
 		}
-	}, [session.status, session.latestSnapshotImageId]);
+	}, [
+		session.status,
+		session.latestSnapshotImageId,
+		isResuming,
+		resumeMutation,
+	]);
 
 	const handleDelete = () => {
-		if (!confirm("Are you sure you want to terminate this session?"))
-			return;
+		if (!confirm("Are you sure you want to terminate this session?")) return;
 		deleteMutation.mutate();
 	};
 
@@ -110,8 +114,8 @@ function SessionDetail() {
 						Restoring from snapshot...
 					</div>
 					<p className="text-sm text-text-secondary">
-						Recreating your sandbox from the last saved state. This
-						may take a moment.
+						Recreating your sandbox from the last saved state. This may take a
+						moment.
 					</p>
 					<div className="mt-6">
 						<div className="inline-block w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />
@@ -179,9 +183,7 @@ function SessionDetail() {
 									Last Snapshot
 								</div>
 								<div className="text-sm">
-									{new Date(
-										session.lastSnapshotAt,
-									).toLocaleString()}
+									{new Date(session.lastSnapshotAt).toLocaleString()}
 								</div>
 							</div>
 						)}
@@ -227,8 +229,7 @@ function SessionDetail() {
 
 					{resumeMutation.isError && (
 						<div className="mt-4 p-4 bg-error/10 border border-error/30 text-error text-sm">
-							Failed to resume session. The snapshot may have
-							expired.
+							Failed to resume session. The snapshot may have expired.
 						</div>
 					)}
 				</div>

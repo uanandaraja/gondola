@@ -30,7 +30,9 @@ export async function addSecret(
 export async function listSecrets(
 	projectId: string,
 	userId: string,
-): Promise<Pick<ProjectSecretRecord, "id" | "key" | "createdAt" | "updatedAt">[]> {
+): Promise<
+	Pick<ProjectSecretRecord, "id" | "key" | "createdAt" | "updatedAt">[]
+> {
 	// Verify project ownership
 	const project = await getProject(projectId, userId);
 	if (!project) {

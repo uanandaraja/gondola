@@ -40,9 +40,8 @@ function LandingPage() {
 					Cloud sandboxes for AI coding agents
 				</h1>
 				<p className="text-text-secondary max-w-lg mb-8">
-					spin up cloud sandboxes for your AI coding agents. run many
-					in parallel, close your laptop, and check back when they're
-					done.
+					spin up cloud sandboxes for your AI coding agents. run many in
+					parallel, close your laptop, and check back when they're done.
 				</p>
 				<Link
 					to="/auth"
@@ -92,44 +91,31 @@ function LandingPage() {
 				<h2 className="text-lg font-bold mb-6">How it works</h2>
 				<div className="space-y-6">
 					<div className="flex gap-4">
-						<span className="text-text-muted text-sm shrink-0">
-							01
-						</span>
+						<span className="text-text-muted text-sm shrink-0">01</span>
 						<div>
-							<p className="font-semibold text-sm mb-1">
-								Paste a git URL
-							</p>
+							<p className="font-semibold text-sm mb-1">Paste a git URL</p>
 							<p className="text-text-secondary text-sm">
-								We clone the repo and install dependencies in a
-								cloud sandbox.
+								We clone the repo and install dependencies in a cloud sandbox.
 							</p>
 						</div>
 					</div>
 					<div className="flex gap-4">
-						<span className="text-text-muted text-sm shrink-0">
-							02
-						</span>
+						<span className="text-text-muted text-sm shrink-0">02</span>
 						<div>
 							<p className="font-semibold text-sm mb-1">
 								An AI agent starts working
 							</p>
 							<p className="text-text-secondary text-sm">
-								OpenCode runs in the sandbox. Give it a task and
-								walk away.
+								OpenCode runs in the sandbox. Give it a task and walk away.
 							</p>
 						</div>
 					</div>
 					<div className="flex gap-4">
-						<span className="text-text-muted text-sm shrink-0">
-							03
-						</span>
+						<span className="text-text-muted text-sm shrink-0">03</span>
 						<div>
-							<p className="font-semibold text-sm mb-1">
-								Check back anytime
-							</p>
+							<p className="font-semibold text-sm mb-1">Check back anytime</p>
 							<p className="text-text-secondary text-sm">
-								Your sandboxes stay running in the cloud. No
-								laptop required.
+								Your sandboxes stay running in the cloud. No laptop required.
 							</p>
 						</div>
 					</div>

@@ -11,9 +11,9 @@
  * 3. Ensure DATABASE_URL and MODAL_APP_NAME env vars are set
  */
 
+import { ModalClient } from "modal@0.6.1";
 // Inline imports with versions (Railway Functions will auto-install these)
 import { SQL } from "bun";
-import { ModalClient } from "modal@0.6.1";
 
 // ── Configuration ───────────────────────────────────────────────────
 
@@ -158,7 +158,6 @@ async function main() {
 	});
 
 	// Initialize database connection
-	// biome-ignore lint/style/noNonNullAssertion: DATABASE_URL is validated above
 	const sql = new SQL(DATABASE_URL!);
 
 	// Initialize Modal client
@@ -166,7 +165,7 @@ async function main() {
 		tokenId: MODAL_TOKEN_ID,
 		tokenSecret: MODAL_TOKEN_SECRET,
 	});
-	const app = await modalClient.apps.fromName(MODAL_APP_NAME, {
+	const _app = await modalClient.apps.fromName(MODAL_APP_NAME, {
 		createIfMissing: true,
 	});
 

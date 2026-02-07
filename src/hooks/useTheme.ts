@@ -2,7 +2,10 @@ import { useCallback, useSyncExternalStore } from "react";
 
 function getTheme(): "light" | "dark" {
 	if (typeof document === "undefined") return "dark";
-	return (document.documentElement.getAttribute("data-theme") as "light" | "dark") || "light";
+	return (
+		(document.documentElement.getAttribute("data-theme") as "light" | "dark") ||
+		"light"
+	);
 }
 
 let listeners: Array<() => void> = [];
@@ -21,7 +24,11 @@ function setTheme(theme: "light" | "dark") {
 }
 
 export function useTheme() {
-	const theme = useSyncExternalStore(subscribe, getTheme, () => "light" as const);
+	const theme = useSyncExternalStore(
+		subscribe,
+		getTheme,
+		() => "light" as const,
+	);
 
 	const toggle = useCallback(() => {
 		setTheme(theme === "dark" ? "light" : "dark");

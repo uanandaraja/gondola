@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { signIn } from "../services/auth/client";
 
 export const Route = createFileRoute("/auth")({
@@ -18,9 +18,7 @@ function AuthPage() {
 			<div className="w-full max-w-sm">
 				<div className="bg-bg-secondary border border-border-light shadow-sm p-8">
 					<div className="text-center mb-8">
-						<h1 className="font-bold text-2xl tracking-tight mb-1">
-							GONDOLA
-						</h1>
+						<h1 className="font-bold text-2xl tracking-tight mb-1">GONDOLA</h1>
 						<p className="text-text-secondary text-sm">
 							Sign in to manage your sandboxes
 						</p>

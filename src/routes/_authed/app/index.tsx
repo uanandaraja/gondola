@@ -1,10 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
-import {
-	createNewProject,
-	fetchProjects,
-} from "../../../server/functions";
+import { createNewProject, fetchProjects } from "../../../server/functions";
 
 export const Route = createFileRoute("/_authed/app/")({
 	loader: async () => {
@@ -74,17 +71,14 @@ function ProjectList() {
 			{showForm && (
 				<div className="bg-bg-secondary border border-border-light shadow-sm mb-8">
 					<div className="px-6 py-5 border-b border-border-light">
-						<h3 className="font-semibold text-lg">
-							Create New Project
-						</h3>
+						<h3 className="font-semibold text-lg">Create New Project</h3>
 					</div>
 					<div className="px-6 py-6">
 						<form onSubmit={handleCreate} className="space-y-5">
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 								<div>
 									<label className="block mb-2 text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary">
-										GitHub URL{" "}
-										<span className="text-error">*</span>
+										GitHub URL <span className="text-error">*</span>
 									</label>
 									<input
 										type="url"
@@ -94,10 +88,7 @@ function ProjectList() {
 											// Auto-derive name from URL
 											if (!name) {
 												const derived = e.target.value
-													.replace(
-														/^https?:\/\//,
-														"",
-													)
+													.replace(/^https?:\/\//, "")
 													.replace(/\.git$/, "")
 													.split("/")
 													.pop();
@@ -130,9 +121,7 @@ function ProjectList() {
 									<input
 										type="text"
 										value={branch}
-										onChange={(e) =>
-											setBranch(e.target.value)
-										}
+										onChange={(e) => setBranch(e.target.value)}
 										placeholder="main"
 										className="w-full px-3 py-2.5 text-sm border border-border-light bg-bg-secondary text-text font-mono focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-150"
 									/>
@@ -144,9 +133,7 @@ function ProjectList() {
 									<input
 										type="text"
 										value={description}
-										onChange={(e) =>
-											setDescription(e.target.value)
-										}
+										onChange={(e) => setDescription(e.target.value)}
 										placeholder="A brief description"
 										className="w-full px-3 py-2.5 text-sm border border-border-light bg-bg-secondary text-text font-mono focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-150"
 									/>
@@ -157,9 +144,7 @@ function ProjectList() {
 								disabled={createMutation.isPending}
 								className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold font-mono uppercase tracking-wide bg-accent text-bg-secondary hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed md:w-auto w-full transition-colors duration-150"
 							>
-								{createMutation.isPending
-									? "CREATING..."
-									: "CREATE PROJECT"}
+								{createMutation.isPending ? "CREATING..." : "CREATE PROJECT"}
 							</button>
 						</form>
 					</div>
@@ -204,16 +189,11 @@ function ProjectList() {
 									<div className="flex items-center gap-3 mt-2 text-xs text-text-muted">
 										<span>
 											{project.activeSessions}{" "}
-											{project.activeSessions === 1
-												? "session"
-												: "sessions"}
+											{project.activeSessions === 1 ? "session" : "sessions"}
 										</span>
 										<span>&middot;</span>
 										<span>
-											Created{" "}
-											{new Date(
-												project.createdAt,
-											).toLocaleDateString()}
+											Created {new Date(project.createdAt).toLocaleDateString()}
 										</span>
 									</div>
 								</Link>

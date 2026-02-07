@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { auth } from "../../services/auth";
 import {
 	getSessionById,
 	resumeSession,
 	terminateSession,
 } from "../../server/session";
+import { auth } from "../../services/auth";
 
 async function requireUser(request: Request) {
 	const session = await auth.api.getSession({ headers: request.headers });
@@ -20,27 +20,24 @@ export const Route = createFileRoute("/api/projects/$id/sessions/$sid")({
 			GET: async ({
 				params,
 				request,
-			}: { params: { id: string; sid: string }; request: Request }) => {
+			}: {
+				params: { id: string; sid: string };
+				request: Request;
+			}) => {
 				const user = await requireUser(request);
 				if (!user) {
-					return new Response(
-						JSON.stringify({ error: "Unauthorized" }),
-						{
-							status: 401,
-							headers: { "Content-Type": "application/json" },
-						},
-					);
+					return new Response(JSON.stringify({ error: "Unauthorized" }), {
+						status: 401,
+						headers: { "Content-Type": "application/json" },
+					});
 				}
 
 				const session = await getSessionById(params.sid, user.id);
 				if (!session) {
-					return new Response(
-						JSON.stringify({ error: "Session not found" }),
-						{
-							status: 404,
-							headers: { "Content-Type": "application/json" },
-						},
-					);
+					return new Response(JSON.stringify({ error: "Session not found" }), {
+						status: 404,
+						headers: { "Content-Type": "application/json" },
+					});
 				}
 
 				return new Response(JSON.stringify(session), {
@@ -50,16 +47,16 @@ export const Route = createFileRoute("/api/projects/$id/sessions/$sid")({
 			POST: async ({
 				params,
 				request,
-			}: { params: { id: string; sid: string }; request: Request }) => {
+			}: {
+				params: { id: string; sid: string };
+				request: Request;
+			}) => {
 				const user = await requireUser(request);
 				if (!user) {
-					return new Response(
-						JSON.stringify({ error: "Unauthorized" }),
-						{
-							status: 401,
-							headers: { "Content-Type": "application/json" },
-						},
-					);
+					return new Response(JSON.stringify({ error: "Unauthorized" }), {
+						status: 401,
+						headers: { "Content-Type": "application/json" },
+					});
 				}
 
 				try {
@@ -71,10 +68,7 @@ export const Route = createFileRoute("/api/projects/$id/sessions/$sid")({
 					return new Response(
 						JSON.stringify({
 							error: "Failed to resume session",
-							message:
-								error instanceof Error
-									? error.message
-									: "Unknown error",
+							message: error instanceof Error ? error.message : "Unknown error",
 						}),
 						{
 							status: 500,
@@ -86,16 +80,16 @@ export const Route = createFileRoute("/api/projects/$id/sessions/$sid")({
 			DELETE: async ({
 				params,
 				request,
-			}: { params: { id: string; sid: string }; request: Request }) => {
+			}: {
+				params: { id: string; sid: string };
+				request: Request;
+			}) => {
 				const user = await requireUser(request);
 				if (!user) {
-					return new Response(
-						JSON.stringify({ error: "Unauthorized" }),
-						{
-							status: 401,
-							headers: { "Content-Type": "application/json" },
-						},
-					);
+					return new Response(JSON.stringify({ error: "Unauthorized" }), {
+						status: 401,
+						headers: { "Content-Type": "application/json" },
+					});
 				}
 
 				await terminateSession(params.sid, user.id);

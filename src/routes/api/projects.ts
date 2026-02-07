@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
-import { auth } from "../../services/auth";
 import { createProject, listProjects } from "../../server/projects";
+import { auth } from "../../services/auth";
 
 const createSchema = z.object({
 	name: z.string().min(1),
@@ -24,13 +24,10 @@ export const Route = createFileRoute("/api/projects")({
 			GET: async ({ request }: { request: Request }) => {
 				const user = await requireUser(request);
 				if (!user) {
-					return new Response(
-						JSON.stringify({ error: "Unauthorized" }),
-						{
-							status: 401,
-							headers: { "Content-Type": "application/json" },
-						},
-					);
+					return new Response(JSON.stringify({ error: "Unauthorized" }), {
+						status: 401,
+						headers: { "Content-Type": "application/json" },
+					});
 				}
 
 				const projects = await listProjects(user.id);
@@ -41,13 +38,10 @@ export const Route = createFileRoute("/api/projects")({
 			POST: async ({ request }: { request: Request }) => {
 				const user = await requireUser(request);
 				if (!user) {
-					return new Response(
-						JSON.stringify({ error: "Unauthorized" }),
-						{
-							status: 401,
-							headers: { "Content-Type": "application/json" },
-						},
-					);
+					return new Response(JSON.stringify({ error: "Unauthorized" }), {
+						status: 401,
+						headers: { "Content-Type": "application/json" },
+					});
 				}
 
 				try {
@@ -67,10 +61,7 @@ export const Route = createFileRoute("/api/projects")({
 						);
 					}
 
-					const project = await createProject(
-						user.id,
-						result.data,
-					);
+					const project = await createProject(user.id, result.data);
 					return new Response(JSON.stringify(project), {
 						status: 201,
 						headers: { "Content-Type": "application/json" },
@@ -79,10 +70,7 @@ export const Route = createFileRoute("/api/projects")({
 					return new Response(
 						JSON.stringify({
 							error: "Failed to create project",
-							message:
-								error instanceof Error
-									? error.message
-									: "Unknown error",
+							message: error instanceof Error ? error.message : "Unknown error",
 						}),
 						{
 							status: 500,

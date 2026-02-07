@@ -130,9 +130,7 @@ export const updateProjectSecret = createServerFn({ method: "POST" })
 	});
 
 export const removeProjectSecret = createServerFn({ method: "POST" })
-	.inputValidator(
-		(data: { projectId: string; secretId: string }) => data,
-	)
+	.inputValidator((data: { projectId: string; secretId: string }) => data)
 	.handler(async ({ data }) => {
 		const userId = await requireUserId();
 		await removeSecret(data.secretId, data.projectId, userId);
