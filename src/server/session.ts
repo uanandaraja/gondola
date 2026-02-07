@@ -427,7 +427,7 @@ export async function terminateSession(
 		);
 		try {
 			const client = new ModalClient();
-			const sandbox = await client.sandboxes.get(sessionRow.modalSandboxId);
+			const sandbox = await client.sandboxes.fromId(sessionRow.modalSandboxId);
 			await sandbox.terminate();
 			console.log(`[${sessionId}] Sandbox terminated via Modal API`);
 		} catch (error) {

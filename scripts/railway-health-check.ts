@@ -81,7 +81,7 @@ async function checkSessionHealth(
 
 	try {
 		// Try to get the sandbox from Modal
-		const sandbox = await client.sandboxes.get(sandboxId);
+		const sandbox = await client.sandboxes.fromId(sandboxId);
 
 		// Check if sandbox is still running
 		const exitCode = await sandbox.poll();
