@@ -2,6 +2,10 @@ import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import {
+	getStatusBadgeClass,
+	sortSessionsByStatus,
+} from "../../../lib/session";
+import {
 	addProjectSecret,
 	createNewSession,
 	fetchDecryptedSecrets,
@@ -145,38 +149,7 @@ function ProjectDetail() {
 		bulkAddMutation.mutate(entries);
 	};
 
-	const getStatusBadgeClass = (status: string) => {
-		switch (status) {
-			case "running":
-				return "bg-success/10 text-success border-success/30";
-			case "creating":
-			case "snapshotting":
-				return "bg-warning/10 text-warning border-warning/30";
-			case "suspended":
-				return "bg-blue-500/10 text-blue-500 border-blue-500/30";
-			case "error":
-				return "bg-error/10 text-error border-error/30";
-			case "terminated":
-				return "bg-bg-tertiary text-text-muted border-border-light";
-			default:
-				return "bg-bg-tertiary text-text-muted border-border-light";
-		}
-	};
-
-	const sorted = [...sessions].sort((a, b) => {
-		const order = {
-			running: 0,
-			creating: 1,
-			snapshotting: 2,
-			suspended: 3,
-			error: 4,
-			terminated: 5,
-		};
-		return (
-			(order[a.status as keyof typeof order] ?? 9) -
-			(order[b.status as keyof typeof order] ?? 9)
-		);
-	});
+	const sorted = sortSessionsByStatus(sessions);
 
 	const terminatedCount = sessions.filter(
 		(s) => s.status === "terminated",

@@ -6,6 +6,7 @@ import {
 	useRouter,
 } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { getStatusBadgeClass } from "../../../lib/session";
 import {
 	fetchSession,
 	removeSession,
@@ -77,24 +78,6 @@ function SessionDetail() {
 	const handleDelete = () => {
 		if (!confirm("Are you sure you want to terminate this session?")) return;
 		deleteMutation.mutate();
-	};
-
-	const getStatusBadgeClass = (status: string) => {
-		switch (status) {
-			case "running":
-				return "bg-success/10 text-success border-success/30";
-			case "creating":
-			case "snapshotting":
-				return "bg-warning/10 text-warning border-warning/30";
-			case "suspended":
-				return "bg-blue-500/10 text-blue-500 border-blue-500/30";
-			case "error":
-				return "bg-error/10 text-error border-error/30";
-			case "terminated":
-				return "bg-bg-tertiary text-text-muted border-border-light";
-			default:
-				return "bg-bg-tertiary text-text-muted border-border-light";
-		}
 	};
 
 	if (isResuming || resumeMutation.isPending) {

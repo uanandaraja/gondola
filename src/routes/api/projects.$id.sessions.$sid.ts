@@ -1,18 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
+	notFoundResponse,
+	requireUser,
+	unauthorizedResponse,
+} from "../../lib/auth";
+import {
 	getSessionById,
 	resumeSession,
 	terminateSession,
 } from "../../server/session";
-import { auth } from "../../services/auth";
-
-async function requireUser(request: Request) {
-	const session = await auth.api.getSession({ headers: request.headers });
-	if (!session?.user?.id) {
-		return null;
-	}
-	return session.user;
-}
 
 export const Route = createFileRoute("/api/projects/$id/sessions/$sid")({
 	server: {
@@ -26,18 +22,12 @@ export const Route = createFileRoute("/api/projects/$id/sessions/$sid")({
 			}) => {
 				const user = await requireUser(request);
 				if (!user) {
-					return new Response(JSON.stringify({ error: "Unauthorized" }), {
-						status: 401,
-						headers: { "Content-Type": "application/json" },
-					});
+					return unauthorizedResponse();
 				}
 
 				const session = await getSessionById(params.sid, user.id);
 				if (!session) {
-					return new Response(JSON.stringify({ error: "Session not found" }), {
-						status: 404,
-						headers: { "Content-Type": "application/json" },
-					});
+					return notFoundResponse("Session");
 				}
 
 				return new Response(JSON.stringify(session), {
@@ -53,10 +43,7 @@ export const Route = createFileRoute("/api/projects/$id/sessions/$sid")({
 			}) => {
 				const user = await requireUser(request);
 				if (!user) {
-					return new Response(JSON.stringify({ error: "Unauthorized" }), {
-						status: 401,
-						headers: { "Content-Type": "application/json" },
-					});
+					return unauthorizedResponse();
 				}
 
 				try {
@@ -86,10 +73,7 @@ export const Route = createFileRoute("/api/projects/$id/sessions/$sid")({
 			}) => {
 				const user = await requireUser(request);
 				if (!user) {
-					return new Response(JSON.stringify({ error: "Unauthorized" }), {
-						status: 401,
-						headers: { "Content-Type": "application/json" },
-					});
+					return unauthorizedResponse();
 				}
 
 				await terminateSession(params.sid, user.id);

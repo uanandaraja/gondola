@@ -1,18 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
+	notFoundResponse,
+	requireUser,
+	unauthorizedResponse,
+} from "../../lib/auth";
+import {
 	deleteProject,
 	getProject,
 	updateProject,
 } from "../../server/projects";
-import { auth } from "../../services/auth";
-
-async function requireUser(request: Request) {
-	const session = await auth.api.getSession({ headers: request.headers });
-	if (!session?.user?.id) {
-		return null;
-	}
-	return session.user;
-}
 
 export const Route = createFileRoute("/api/projects/$id")({
 	server: {
@@ -26,18 +22,12 @@ export const Route = createFileRoute("/api/projects/$id")({
 			}) => {
 				const user = await requireUser(request);
 				if (!user) {
-					return new Response(JSON.stringify({ error: "Unauthorized" }), {
-						status: 401,
-						headers: { "Content-Type": "application/json" },
-					});
+					return unauthorizedResponse();
 				}
 
 				const project = await getProject(params.id, user.id);
 				if (!project) {
-					return new Response(JSON.stringify({ error: "Project not found" }), {
-						status: 404,
-						headers: { "Content-Type": "application/json" },
-					});
+					return notFoundResponse("Project");
 				}
 
 				return new Response(JSON.stringify(project), {
@@ -53,23 +43,14 @@ export const Route = createFileRoute("/api/projects/$id")({
 			}) => {
 				const user = await requireUser(request);
 				if (!user) {
-					return new Response(JSON.stringify({ error: "Unauthorized" }), {
-						status: 401,
-						headers: { "Content-Type": "application/json" },
-					});
+					return unauthorizedResponse();
 				}
 
 				try {
 					const body = await request.json();
 					const updated = await updateProject(params.id, user.id, body);
 					if (!updated) {
-						return new Response(
-							JSON.stringify({ error: "Project not found" }),
-							{
-								status: 404,
-								headers: { "Content-Type": "application/json" },
-							},
-						);
+						return notFoundResponse("Project");
 					}
 					return new Response(JSON.stringify(updated), {
 						headers: { "Content-Type": "application/json" },
@@ -96,10 +77,7 @@ export const Route = createFileRoute("/api/projects/$id")({
 			}) => {
 				const user = await requireUser(request);
 				if (!user) {
-					return new Response(JSON.stringify({ error: "Unauthorized" }), {
-						status: 401,
-						headers: { "Content-Type": "application/json" },
-					});
+					return unauthorizedResponse();
 				}
 
 				await deleteProject(params.id, user.id);

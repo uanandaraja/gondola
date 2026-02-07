@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { requireUser, unauthorizedResponse } from "../../lib/auth";
 import { createProject, listProjects } from "../../server/projects";
-import { auth } from "../../services/auth";
 
 const createSchema = z.object({
 	name: z.string().min(1),
@@ -10,24 +10,13 @@ const createSchema = z.object({
 	description: z.string().optional(),
 });
 
-async function requireUser(request: Request) {
-	const session = await auth.api.getSession({ headers: request.headers });
-	if (!session?.user?.id) {
-		return null;
-	}
-	return session.user;
-}
-
 export const Route = createFileRoute("/api/projects")({
 	server: {
 		handlers: {
 			GET: async ({ request }: { request: Request }) => {
 				const user = await requireUser(request);
 				if (!user) {
-					return new Response(JSON.stringify({ error: "Unauthorized" }), {
-						status: 401,
-						headers: { "Content-Type": "application/json" },
-					});
+					return unauthorizedResponse();
 				}
 
 				const projects = await listProjects(user.id);
@@ -38,10 +27,7 @@ export const Route = createFileRoute("/api/projects")({
 			POST: async ({ request }: { request: Request }) => {
 				const user = await requireUser(request);
 				if (!user) {
-					return new Response(JSON.stringify({ error: "Unauthorized" }), {
-						status: 401,
-						headers: { "Content-Type": "application/json" },
-					});
+					return unauthorizedResponse();
 				}
 
 				try {
