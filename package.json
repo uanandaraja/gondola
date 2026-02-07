@@ -1,6 +1,9 @@
 {
 	"name": "gondola",
 	"type": "module",
+	"lint-staged": {
+		"*.{ts,tsx,js,jsx}": ["bunx biome check --write --no-errors-on-unmatched"]
+	},
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build",
@@ -11,7 +14,8 @@
 		"db:push": "bunx drizzle-kit push",
 		"db:studio": "bunx drizzle-kit studio",
 		"lint": "bunx biome check",
-		"lint:fix": "bunx biome check --write"
+		"lint:fix": "bunx biome check --write",
+		"prepare": "husky"
 	},
 	"dependencies": {
 		"@tanstack/react-query": "^5.90.20",
@@ -36,6 +40,8 @@
 		"@types/react-dom": "^19.2.0",
 		"@vitejs/plugin-react": "^5.0.4",
 		"drizzle-kit": "^0.31.8",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.2.7",
 		"vite": "^7.1.7",
 		"vite-tsconfig-paths": "^6.0.2"
 	}
