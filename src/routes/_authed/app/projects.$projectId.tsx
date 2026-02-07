@@ -472,14 +472,9 @@ function ProjectDetail() {
 				) : (
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 						{filtered.map((session) => (
-							<Link
+							<div
 								key={session.id}
-								to="/app/projects/$projectId/sessions/$sessionId"
-								params={{
-									projectId: project.id,
-									sessionId: session.id,
-								}}
-								className="bg-bg-secondary border border-border-light shadow-sm p-5 hover:border-accent/40 transition-colors duration-150 flex flex-col gap-3"
+								className="bg-bg-secondary border border-border-light shadow-sm p-5 flex flex-col gap-3"
 							>
 								<p className="font-mono text-sm font-semibold">
 									{session.id.slice(0, 8)}
@@ -496,40 +491,50 @@ function ProjectDetail() {
 									)}
 								</div>
 								<span
-									className={`inline-flex items-center self-start px-2.5 py-1 text-xs font-semibold font-mono uppercase tracking-wide border rounded ${getStatusBadgeClass(session.status)}`}
+									className={`inline-flex items-center self-start px-2.5 py-1 text-xs font-semibold font-mono uppercase tracking-wide border ${getStatusBadgeClass(session.status)}`}
 								>
 									{session.status}
 								</span>
-								{session.status === "running" && session.opencodeUrl && (
-									<span
-										onClick={(e) => {
-											e.preventDefault();
-											window.open(session.opencodeUrl!, "_blank");
-										}}
-										className="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold font-mono uppercase tracking-wide bg-accent text-bg-secondary hover:bg-accent-hover transition-colors duration-150 mt-1"
-									>
-										Open Sandbox
-									</span>
-								)}
-								{(session.status === "terminated" ||
-									session.status === "suspended") &&
-									session.latestSnapshotImageId && (
+								<div className="flex gap-2 mt-1">
+									{session.status === "running" && session.opencodeUrl && (
 										<button
 											type="button"
-											onClick={(e) => {
-												e.preventDefault();
-												e.stopPropagation();
-												resumeSessionMutation.mutate(session.id);
-											}}
-											disabled={resumeSessionMutation.isPending}
-											className="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold font-mono uppercase tracking-wide border border-accent text-accent hover:bg-accent hover:text-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150 mt-1"
+											onClick={() =>
+												window.open(session.opencodeUrl!, "_blank")
+											}
+											className="flex-1 inline-flex items-center justify-center px-4 py-2 text-xs font-semibold font-mono uppercase tracking-wide bg-accent text-bg-secondary hover:bg-accent-hover transition-colors duration-150"
 										>
-											{resumeSessionMutation.isPending
-												? "RESUMING..."
-												: "RESUME"}
+											Open Sandbox
 										</button>
 									)}
-							</Link>
+									{(session.status === "terminated" ||
+										session.status === "suspended") &&
+										session.latestSnapshotImageId && (
+											<button
+												type="button"
+												onClick={() =>
+													resumeSessionMutation.mutate(session.id)
+												}
+												disabled={resumeSessionMutation.isPending}
+												className="flex-1 inline-flex items-center justify-center px-4 py-2 text-xs font-semibold font-mono uppercase tracking-wide border border-accent text-accent hover:bg-accent hover:text-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
+											>
+												{resumeSessionMutation.isPending
+													? "RESUMING..."
+													: "RESUME"}
+											</button>
+										)}
+									<Link
+										to="/app/projects/$projectId/sessions/$sessionId"
+										params={{
+											projectId: project.id,
+											sessionId: session.id,
+										}}
+										className="flex-1 inline-flex items-center justify-center px-4 py-2 text-xs font-semibold font-mono uppercase tracking-wide border border-border-light text-text-secondary hover:border-accent hover:text-accent transition-colors duration-150"
+									>
+										Detail
+									</Link>
+								</div>
+							</div>
 						))}
 					</div>
 				)}
