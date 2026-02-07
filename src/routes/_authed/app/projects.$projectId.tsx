@@ -8,6 +8,7 @@ import {
 	fetchProjectSecrets,
 	fetchSessions,
 	removeProjectSecret,
+	resumeExistingSession,
 } from "../../../server/functions";
 
 export const Route = createFileRoute("/_authed/app/projects/$projectId")({
@@ -36,6 +37,12 @@ function ProjectDetail() {
 
 	const createSessionMutation = useMutation({
 		mutationFn: () => createNewSession({ data: project.id }),
+		onSuccess: () => router.invalidate(),
+	});
+
+	const resumeSessionMutation = useMutation({
+		mutationFn: (sessionId: string) =>
+			resumeExistingSession({ data: sessionId }),
 		onSuccess: () => router.invalidate(),
 	});
 
@@ -305,6 +312,24 @@ function ProjectDetail() {
 										Open Sandbox
 									</span>
 								)}
+								{(session.status === "terminated" ||
+									session.status === "suspended") &&
+									session.latestSnapshotImageId && (
+										<button
+											type="button"
+											onClick={(e) => {
+												e.preventDefault();
+												e.stopPropagation();
+												resumeSessionMutation.mutate(session.id);
+											}}
+											disabled={resumeSessionMutation.isPending}
+											className="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold font-mono uppercase tracking-wide border border-accent text-accent hover:bg-accent hover:text-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150 mt-1"
+										>
+											{resumeSessionMutation.isPending
+												? "RESUMING..."
+												: "RESUME"}
+										</button>
+									)}
 							</Link>
 						))}
 					</div>

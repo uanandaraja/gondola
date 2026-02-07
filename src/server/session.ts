@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { ModalClient, type Sandbox } from "modal";
 import { db, schema } from "../db";
 import type { SessionRecord } from "../db/schema";
@@ -47,7 +47,9 @@ async function takeSnapshot(sessionId: string): Promise<string | null> {
 	}
 }
 
-function startSnapshotScheduler(sessionId: string): ReturnType<typeof setInterval> {
+function startSnapshotScheduler(
+	sessionId: string,
+): ReturnType<typeof setInterval> {
 	return setInterval(() => {
 		takeSnapshot(sessionId).catch((err) =>
 			console.error(`[${sessionId}] Scheduled snapshot error:`, err),
@@ -81,9 +83,7 @@ async function setupSandboxFromScratch(
 	} catch (_error) {
 		console.error(`[${sessionId}] Clone failed:`, cloneError || cloneOutput);
 		await sandbox.terminate();
-		throw new Error(
-			`Failed to clone repository: ${cloneError || cloneOutput}`,
-		);
+		throw new Error(`Failed to clone repository: ${cloneError || cloneOutput}`);
 	}
 
 	// Detect branch if not specified
@@ -216,9 +216,7 @@ export async function createSession(
 	}
 
 	const sessionId = crypto.randomUUID();
-	console.log(
-		`[${sessionId}] Creating session for project ${project.name}...`,
-	);
+	console.log(`[${sessionId}] Creating session for project ${project.name}...`);
 
 	const client = new ModalClient();
 	const app = await client.apps.fromName(MODAL_APP_NAME, {
@@ -240,8 +238,7 @@ export async function createSession(
 	const secrets = [kimiSecret];
 
 	if (Object.keys(projectSecrets).length > 0) {
-		const projectModalSecret =
-			await client.secrets.fromObject(projectSecrets);
+		const projectModalSecret = await client.secrets.fromObject(projectSecrets);
 		secrets.push(projectModalSecret);
 	}
 
@@ -343,8 +340,7 @@ export async function resumeSession(
 	const secrets = [kimiSecret];
 
 	if (Object.keys(projectSecrets).length > 0) {
-		const projectModalSecret =
-			await client.secrets.fromObject(projectSecrets);
+		const projectModalSecret = await client.secrets.fromObject(projectSecrets);
 		secrets.push(projectModalSecret);
 	}
 
@@ -424,6 +420,23 @@ export async function terminateSession(
 		}
 
 		activeSessions.delete(sessionId);
+	} else if (sessionRow.modalSandboxId) {
+		// Session not in memory but has a sandbox ID - terminate via Modal API directly
+		console.log(
+			`[${sessionId}] Session not in memory, terminating via Modal API...`,
+		);
+		try {
+			const client = new ModalClient();
+			const sandbox = await client.sandboxes.get(sessionRow.modalSandboxId);
+			await sandbox.terminate();
+			console.log(`[${sessionId}] Sandbox terminated via Modal API`);
+		} catch (error) {
+			// Sandbox might already be terminated or doesn't exist
+			console.log(
+				`[${sessionId}] Sandbox already terminated or not found in Modal:`,
+				error instanceof Error ? error.message : error,
+			);
+		}
 	}
 
 	await db
@@ -545,9 +558,7 @@ setInterval(async () => {
 		try {
 			const exitCode = await active.sandbox.poll();
 			if (exitCode !== null) {
-				console.log(
-					`[${sessionId}] Sandbox exited with code ${exitCode}`,
-				);
+				console.log(`[${sessionId}] Sandbox exited with code ${exitCode}`);
 				await handleSessionDeath(sessionId);
 			}
 		} catch (error) {
