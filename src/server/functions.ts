@@ -10,8 +10,11 @@ import {
 } from "./projects";
 import {
 	addSecret,
+	getDecryptedSecretsForUser,
 	listSecrets,
 	removeSecret,
+	replaceAllSecrets,
+	updateSecret,
 } from "./secrets";
 import {
 	createSession,
@@ -91,6 +94,13 @@ export const fetchProjectSecrets = createServerFn({ method: "GET" })
 		return await listSecrets(projectId, userId);
 	});
 
+export const fetchDecryptedSecrets = createServerFn({ method: "GET" })
+	.inputValidator((projectId: string) => projectId)
+	.handler(async ({ data: projectId }) => {
+		const userId = await requireUserId();
+		return await getDecryptedSecretsForUser(projectId, userId);
+	});
+
 export const addProjectSecret = createServerFn({ method: "POST" })
 	.inputValidator(
 		(data: { projectId: string; key: string; value: string }) => data,
@@ -98,6 +108,25 @@ export const addProjectSecret = createServerFn({ method: "POST" })
 	.handler(async ({ data }) => {
 		const userId = await requireUserId();
 		return await addSecret(data.projectId, userId, data.key, data.value);
+	});
+
+export const replaceProjectSecrets = createServerFn({ method: "POST" })
+	.inputValidator(
+		(data: { projectId: string; entries: { key: string; value: string }[] }) =>
+			data,
+	)
+	.handler(async ({ data }) => {
+		const userId = await requireUserId();
+		await replaceAllSecrets(data.projectId, userId, data.entries);
+	});
+
+export const updateProjectSecret = createServerFn({ method: "POST" })
+	.inputValidator(
+		(data: { projectId: string; secretId: string; value: string }) => data,
+	)
+	.handler(async ({ data }) => {
+		const userId = await requireUserId();
+		await updateSecret(data.secretId, data.projectId, userId, data.value);
 	});
 
 export const removeProjectSecret = createServerFn({ method: "POST" })

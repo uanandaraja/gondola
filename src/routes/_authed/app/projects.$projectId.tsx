@@ -4,11 +4,14 @@ import { useState } from "react";
 import {
 	addProjectSecret,
 	createNewSession,
+	fetchDecryptedSecrets,
 	fetchProject,
 	fetchProjectSecrets,
 	fetchSessions,
 	removeProjectSecret,
+	replaceProjectSecrets,
 	resumeExistingSession,
+	updateProjectSecret,
 } from "../../../server/functions";
 
 export const Route = createFileRoute("/_authed/app/projects/$projectId")({
@@ -31,8 +34,13 @@ function ProjectDetail() {
 	const router = useRouter();
 	const [showSecrets, setShowSecrets] = useState(false);
 	const [showSecretForm, setShowSecretForm] = useState(false);
+	const [showBulkForm, setShowBulkForm] = useState(false);
 	const [secretKey, setSecretKey] = useState("");
 	const [secretValue, setSecretValue] = useState("");
+	const [bulkEnv, setBulkEnv] = useState("");
+	const [bulkError, setBulkError] = useState("");
+	const [editingSecretId, setEditingSecretId] = useState<string | null>(null);
+	const [editValue, setEditValue] = useState("");
 	const [showTerminated, setShowTerminated] = useState(false);
 
 	const createSessionMutation = useMutation({
@@ -67,10 +75,74 @@ function ProjectDetail() {
 		onSuccess: () => router.invalidate(),
 	});
 
+	const updateSecretMutation = useMutation({
+		mutationFn: (data: { secretId: string; value: string }) =>
+			updateProjectSecret({
+				data: { projectId: project.id, ...data },
+			}),
+		onSuccess: () => {
+			setEditingSecretId(null);
+			setEditValue("");
+			router.invalidate();
+		},
+	});
+
 	const handleAddSecret = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!secretKey.trim() || !secretValue.trim()) return;
 		addSecretMutation.mutate({ key: secretKey, value: secretValue });
+	};
+
+	const bulkAddMutation = useMutation({
+		mutationFn: (entries: { key: string; value: string }[]) =>
+			replaceProjectSecrets({
+				data: { projectId: project.id, entries },
+			}),
+		onSuccess: () => {
+			setBulkEnv("");
+			setBulkError("");
+			setShowBulkForm(false);
+			router.invalidate();
+		},
+	});
+
+	const handleBulkAdd = (e: React.FormEvent) => {
+		e.preventDefault();
+		const lines = bulkEnv
+			.split("\n")
+			.map((l) => l.trim())
+			.filter((l) => l && !l.startsWith("#"));
+
+		const entries: { key: string; value: string }[] = [];
+		for (const line of lines) {
+			const eqIdx = line.indexOf("=");
+			if (eqIdx === -1) {
+				setBulkError(`Invalid line (no = sign): ${line}`);
+				return;
+			}
+			const key = line.slice(0, eqIdx).trim();
+			let value = line.slice(eqIdx + 1).trim();
+			// Strip surrounding quotes
+			if (
+				(value.startsWith('"') && value.endsWith('"')) ||
+				(value.startsWith("'") && value.endsWith("'"))
+			) {
+				value = value.slice(1, -1);
+			}
+			if (!key) {
+				setBulkError(`Invalid line (empty key): ${line}`);
+				return;
+			}
+			entries.push({ key, value });
+		}
+
+		if (entries.length === 0) {
+			setBulkError("No valid entries found");
+			return;
+		}
+
+		setBulkError("");
+		bulkAddMutation.mutate(entries);
 	};
 
 	const getStatusBadgeClass = (status: string) => {
@@ -159,13 +231,45 @@ function ProjectDetail() {
 						<p className="text-xs text-text-muted">
 							Encrypted at rest. Injected into sandbox sessions.
 						</p>
-						<button
-							type="button"
-							onClick={() => setShowSecretForm(!showSecretForm)}
-							className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold font-mono uppercase tracking-wide bg-accent text-bg-secondary hover:bg-accent-hover transition-colors duration-150"
-						>
-							{showSecretForm ? "CANCEL" : "ADD SECRET"}
-						</button>
+						<div className="flex items-center gap-2">
+							<button
+								type="button"
+								onClick={async () => {
+									if (showBulkForm) {
+										setShowBulkForm(false);
+									} else {
+										setShowSecretForm(false);
+										// Pre-populate with existing decrypted secrets
+										if (secrets.length > 0) {
+											const decrypted = await fetchDecryptedSecrets({
+												data: project.id,
+											});
+											const envStr = Object.entries(decrypted)
+												.map(([k, v]) => `${k}=${v}`)
+												.join("\n");
+											setBulkEnv(envStr);
+										} else {
+											setBulkEnv("");
+										}
+										setBulkError("");
+										setShowBulkForm(true);
+									}
+								}}
+								className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold font-mono uppercase tracking-wide border border-accent text-accent hover:bg-accent hover:text-bg-secondary transition-colors duration-150"
+							>
+								{showBulkForm ? "CANCEL" : "PASTE .ENV"}
+							</button>
+							<button
+								type="button"
+								onClick={() => {
+									setShowSecretForm(!showSecretForm);
+									if (!showSecretForm) setShowBulkForm(false);
+								}}
+								className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold font-mono uppercase tracking-wide bg-accent text-bg-secondary hover:bg-accent-hover transition-colors duration-150"
+							>
+								{showSecretForm ? "CANCEL" : "ADD SECRET"}
+							</button>
+						</div>
 					</div>
 
 					{showSecretForm && (
@@ -208,6 +312,46 @@ function ProjectDetail() {
 						</div>
 					)}
 
+					{showBulkForm && (
+						<div className="px-6 py-5 border-b border-border-light">
+							<form onSubmit={handleBulkAdd} className="flex flex-col gap-3">
+								<label className="block text-xs font-semibold font-mono uppercase tracking-wide text-text-secondary">
+									Paste .env contents
+								</label>
+								<textarea
+									value={bulkEnv}
+									onChange={(e) => {
+										setBulkEnv(e.target.value);
+										setBulkError("");
+									}}
+									placeholder={"DATABASE_URL=postgres://...\nAPI_KEY=sk-...\n# Comments are ignored"}
+									rows={8}
+									className="w-full px-3 py-2 text-sm border border-border-light bg-bg-secondary text-text font-mono focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-150 resize-y"
+									required
+								/>
+								{bulkError && (
+									<p className="text-xs text-error font-mono">{bulkError}</p>
+								)}
+								<div className="flex items-center justify-between">
+									<p className="text-xs text-text-muted">
+										{bulkEnv
+											.split("\n")
+											.filter((l) => l.trim() && !l.trim().startsWith("#"))
+											.length}{" "}
+										entries detected
+									</p>
+									<button
+										type="submit"
+										disabled={bulkAddMutation.isPending}
+										className="px-4 py-2 text-sm font-semibold font-mono uppercase tracking-wide bg-accent text-bg-secondary hover:bg-accent-hover disabled:opacity-50 transition-colors duration-150"
+									>
+										{bulkAddMutation.isPending ? "ADDING..." : "ADD ALL"}
+									</button>
+								</div>
+							</form>
+						</div>
+					)}
+
 					{secrets.length === 0 ? (
 						<div className="px-6 py-8 text-center text-text-muted text-sm">
 							No environment variables configured.
@@ -217,21 +361,76 @@ function ProjectDetail() {
 							{secrets.map((secret) => (
 								<div
 									key={secret.id}
-									className="px-6 py-3 border-b border-border-light last:border-b-0 flex items-center justify-between"
+									className="px-6 py-3 border-b border-border-light last:border-b-0"
 								>
-									<span className="font-mono text-sm">{secret.key}</span>
-									<div className="flex items-center gap-3">
-										<span className="text-text-muted text-sm font-mono">
-											••••••••
-										</span>
-										<button
-											type="button"
-											onClick={() => removeSecretMutation.mutate(secret.id)}
-											className="text-error/70 hover:text-error text-sm transition-colors duration-150"
+									{editingSecretId === secret.id ? (
+										<form
+											onSubmit={(e) => {
+												e.preventDefault();
+												updateSecretMutation.mutate({
+													secretId: secret.id,
+													value: editValue,
+												});
+											}}
+											className="flex items-center gap-3"
 										>
-											Remove
-										</button>
-									</div>
+											<span className="font-mono text-sm shrink-0">
+												{secret.key}
+											</span>
+											<input
+												type="text"
+												value={editValue}
+												onChange={(e) => setEditValue(e.target.value)}
+												className="flex-1 px-3 py-1.5 text-sm border border-border-light bg-bg-secondary text-text font-mono focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-150"
+												autoFocus
+											/>
+											<button
+												type="submit"
+												disabled={updateSecretMutation.isPending}
+												className="text-accent hover:text-accent-hover text-sm font-semibold transition-colors duration-150"
+											>
+												{updateSecretMutation.isPending ? "..." : "Save"}
+											</button>
+											<button
+												type="button"
+												onClick={() => setEditingSecretId(null)}
+												className="text-text-muted hover:text-text-secondary text-sm transition-colors duration-150"
+											>
+												Cancel
+											</button>
+										</form>
+									) : (
+										<div className="flex items-center justify-between">
+											<span className="font-mono text-sm">{secret.key}</span>
+											<div className="flex items-center gap-3">
+												<span className="text-text-muted text-sm font-mono">
+													••••••••
+												</span>
+												<button
+													type="button"
+													onClick={async () => {
+														const decrypted = await fetchDecryptedSecrets({
+															data: project.id,
+														});
+														setEditValue(decrypted[secret.key] ?? "");
+														setEditingSecretId(secret.id);
+													}}
+													className="text-text-secondary hover:text-text text-sm transition-colors duration-150"
+												>
+													Edit
+												</button>
+												<button
+													type="button"
+													onClick={() =>
+														removeSecretMutation.mutate(secret.id)
+													}
+													className="text-error/70 hover:text-error text-sm transition-colors duration-150"
+												>
+													Remove
+												</button>
+											</div>
+										</div>
+									)}
 								</div>
 							))}
 						</div>
@@ -267,7 +466,7 @@ function ProjectDetail() {
 				</div>
 
 				{filtered.length === 0 ? (
-					<div className="bg-bg-secondary border border-border-light rounded-lg shadow-sm px-6 py-12 text-center text-text-muted">
+					<div className="bg-bg-secondary border border-border-light shadow-sm px-6 py-12 text-center text-text-muted">
 						No sessions yet. Create one to start working.
 					</div>
 				) : (

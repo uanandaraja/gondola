@@ -48,6 +48,31 @@ export async function listSecrets(
 		.where(eq(schema.projectSecrets.projectId, projectId));
 }
 
+export async function updateSecret(
+	secretId: string,
+	projectId: string,
+	userId: string,
+	value: string,
+): Promise<void> {
+	const project = await getProject(projectId, userId);
+	if (!project) {
+		throw new Error("Project not found");
+	}
+
+	await db
+		.update(schema.projectSecrets)
+		.set({
+			encryptedValue: encrypt(value),
+			updatedAt: new Date(),
+		})
+		.where(
+			and(
+				eq(schema.projectSecrets.id, secretId),
+				eq(schema.projectSecrets.projectId, projectId),
+			),
+		);
+}
+
 export async function removeSecret(
 	secretId: string,
 	projectId: string,
@@ -67,6 +92,46 @@ export async function removeSecret(
 				eq(schema.projectSecrets.projectId, projectId),
 			),
 		);
+}
+
+/** Replaces all secrets for a project in a single batch operation. */
+export async function replaceAllSecrets(
+	projectId: string,
+	userId: string,
+	entries: { key: string; value: string }[],
+): Promise<void> {
+	const project = await getProject(projectId, userId);
+	if (!project) {
+		throw new Error("Project not found");
+	}
+
+	// Delete all existing secrets for this project
+	await db
+		.delete(schema.projectSecrets)
+		.where(eq(schema.projectSecrets.projectId, projectId));
+
+	// Batch insert all new secrets
+	if (entries.length > 0) {
+		await db.insert(schema.projectSecrets).values(
+			entries.map((e) => ({
+				projectId,
+				key: e.key,
+				encryptedValue: encrypt(e.value),
+			})),
+		);
+	}
+}
+
+/** Returns all decrypted secrets for a project as a key-value map (with ownership check). */
+export async function getDecryptedSecretsForUser(
+	projectId: string,
+	userId: string,
+): Promise<Record<string, string>> {
+	const project = await getProject(projectId, userId);
+	if (!project) {
+		throw new Error("Project not found");
+	}
+	return getDecryptedSecrets(projectId);
 }
 
 /** Internal: returns all decrypted secrets for a project as a key-value map. */
