@@ -1,6 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
 import { requireUser, unauthorizedResponse } from "../../lib/auth";
 import { createSession, listSessions } from "../../server/session";
+
+// Validation schemas
+const uuidSchema = z.string().uuid("Invalid UUID format");
 
 export const Route = createFileRoute("/api/projects/$id/sessions")({
 	server: {
@@ -15,6 +19,21 @@ export const Route = createFileRoute("/api/projects/$id/sessions")({
 				const user = await requireUser(request);
 				if (!user) {
 					return unauthorizedResponse();
+				}
+
+				// Validate project ID format
+				const idValidation = uuidSchema.safeParse(params.id);
+				if (!idValidation.success) {
+					return new Response(
+						JSON.stringify({
+							error: "Invalid project ID",
+							details: idValidation.error.issues,
+						}),
+						{
+							status: 400,
+							headers: { "Content-Type": "application/json" },
+						},
+					);
 				}
 
 				const sessions = await listSessions(params.id, user.id);
@@ -32,6 +51,21 @@ export const Route = createFileRoute("/api/projects/$id/sessions")({
 				const user = await requireUser(request);
 				if (!user) {
 					return unauthorizedResponse();
+				}
+
+				// Validate project ID format
+				const idValidation = uuidSchema.safeParse(params.id);
+				if (!idValidation.success) {
+					return new Response(
+						JSON.stringify({
+							error: "Invalid project ID",
+							details: idValidation.error.issues,
+						}),
+						{
+							status: 400,
+							headers: { "Content-Type": "application/json" },
+						},
+					);
 				}
 
 				try {

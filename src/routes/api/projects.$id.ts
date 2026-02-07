@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
 import {
 	notFoundResponse,
 	requireUser,
@@ -9,6 +10,15 @@ import {
 	getProject,
 	updateProject,
 } from "../../server/projects";
+
+// Validation schemas
+const uuidSchema = z.string().uuid("Invalid UUID format");
+
+const updateProjectSchema = z.object({
+	name: z.string().min(1, "Name is required").optional(),
+	branch: z.string().optional(),
+	description: z.string().optional(),
+});
 
 export const Route = createFileRoute("/api/projects/$id")({
 	server: {
@@ -23,6 +33,21 @@ export const Route = createFileRoute("/api/projects/$id")({
 				const user = await requireUser(request);
 				if (!user) {
 					return unauthorizedResponse();
+				}
+
+				// Validate project ID format
+				const idValidation = uuidSchema.safeParse(params.id);
+				if (!idValidation.success) {
+					return new Response(
+						JSON.stringify({
+							error: "Invalid project ID",
+							details: idValidation.error.issues,
+						}),
+						{
+							status: 400,
+							headers: { "Content-Type": "application/json" },
+						},
+					);
 				}
 
 				const project = await getProject(params.id, user.id);
@@ -46,9 +71,43 @@ export const Route = createFileRoute("/api/projects/$id")({
 					return unauthorizedResponse();
 				}
 
+				// Validate project ID format
+				const idValidation = uuidSchema.safeParse(params.id);
+				if (!idValidation.success) {
+					return new Response(
+						JSON.stringify({
+							error: "Invalid project ID",
+							details: idValidation.error.issues,
+						}),
+						{
+							status: 400,
+							headers: { "Content-Type": "application/json" },
+						},
+					);
+				}
+
 				try {
 					const body = await request.json();
-					const updated = await updateProject(params.id, user.id, body);
+					const validation = updateProjectSchema.safeParse(body);
+
+					if (!validation.success) {
+						return new Response(
+							JSON.stringify({
+								error: "Invalid request",
+								details: validation.error.issues,
+							}),
+							{
+								status: 400,
+								headers: { "Content-Type": "application/json" },
+							},
+						);
+					}
+
+					const updated = await updateProject(
+						params.id,
+						user.id,
+						validation.data,
+					);
 					if (!updated) {
 						return notFoundResponse("Project");
 					}
@@ -78,6 +137,21 @@ export const Route = createFileRoute("/api/projects/$id")({
 				const user = await requireUser(request);
 				if (!user) {
 					return unauthorizedResponse();
+				}
+
+				// Validate project ID format
+				const idValidation = uuidSchema.safeParse(params.id);
+				if (!idValidation.success) {
+					return new Response(
+						JSON.stringify({
+							error: "Invalid project ID",
+							details: idValidation.error.issues,
+						}),
+						{
+							status: 400,
+							headers: { "Content-Type": "application/json" },
+						},
+					);
 				}
 
 				await deleteProject(params.id, user.id);
