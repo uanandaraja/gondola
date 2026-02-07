@@ -5,6 +5,45 @@ import type { SessionRecord } from "../db/schema";
 import { getProject } from "./projects";
 import { getDecryptedSecrets } from "./secrets";
 
+// ── Security: Input Validation & Shell Escaping ──────────────────────
+
+/**
+ * Validates GitHub URL format to prevent command injection.
+ * Only allows https://github.com/* or git@github.com:* URLs.
+ */
+function validateGitHubUrl(url: string): string {
+	// Only allow alphanumeric, dashes, underscores, dots, slashes, colons in URLs
+	const allowedPattern =
+		/^(https:\/\/github\.com\/|git@github\.com:)[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+(\.git)?$/;
+	if (!allowedPattern.test(url)) {
+		throw new Error("Invalid GitHub URL format");
+	}
+	return url;
+}
+
+/**
+ * Validates branch name to prevent command injection.
+ * Branch names should only contain alphanumeric, dashes, underscores, dots, and slashes.
+ */
+function validateBranchName(branch: string): string {
+	// Branch names: alphanumeric, dashes, underscores, dots, forward slashes, @ for HEAD
+	const allowedPattern = /^[a-zA-Z0-9_.@/:-]+$/;
+	if (!allowedPattern.test(branch)) {
+		throw new Error("Invalid branch name format");
+	}
+	return branch;
+}
+
+/**
+ * Escapes a string for safe use in shell commands.
+ * Wraps in single quotes and escapes any single quotes.
+ */
+function shellEscape(str: string): string {
+	if (!str) return "''";
+	// Replace single quotes with '\'' to safely escape them
+	return "'" + str.replace(/'/g, "'\\''") + "'";
+}
+
 // ── Types & State ───────────────────────────────────────────────────
 
 interface ActiveSession {
@@ -67,11 +106,19 @@ async function setupSandboxFromScratch(
 ) {
 	// Clone repository
 	console.log(`[${sessionId}] Cloning repository...`);
-	const branchFlag = branch ? `-b ${branch} ` : "";
+
+	// Validate inputs to prevent shell injection
+	const validatedUrl = validateGitHubUrl(githubUrl);
+	const validatedBranch = branch ? validateBranchName(branch) : null;
+
+	const escapedUrl = shellEscape(validatedUrl);
+	const escapedBranch = validatedBranch ? shellEscape(validatedBranch) : null;
+	const branchFlag = escapedBranch ? `-b ${escapedBranch} ` : "";
+
 	const cloneProc = await sandbox.exec([
 		"bash",
 		"-c",
-		`cd /root/workspace && git clone ${branchFlag}${githubUrl} repo 2>&1`,
+		`cd /root/workspace && git clone ${branchFlag}${escapedUrl} repo 2>&1`,
 	]);
 
 	const cloneOutput = await cloneProc.stdout.readText();
@@ -249,10 +296,12 @@ async function configureGitAuth(
 	await envProc.wait();
 
 	// Configure git user identity
+	const escapedUserName = shellEscape(userName);
+	const escapedUserEmail = shellEscape(userEmail);
 	const gitConfigProc = await sandbox.exec([
 		"bash",
 		"-c",
-		`git config --global user.name "${userName}" && git config --global user.email "${userEmail}"`,
+		`git config --global user.name ${escapedUserName} && git config --global user.email ${escapedUserEmail}`,
 	]);
 	await gitConfigProc.wait();
 
@@ -265,10 +314,11 @@ async function configureGitAuth(
 	await credProc.wait();
 
 	// Set up gh CLI auth
+	const escapedToken = shellEscape(githubToken);
 	const ghProc = await sandbox.exec([
 		"bash",
 		"-c",
-		`GITHUB_TOKEN=${githubToken} gh auth setup-git`,
+		`GITHUB_TOKEN=${escapedToken} gh auth setup-git`,
 	]);
 	await ghProc.wait();
 
