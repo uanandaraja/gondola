@@ -12,46 +12,40 @@
  */
 
 // Inline imports with versions (Railway Functions will auto-install these)
-import { sql } from "drizzle-orm@0.45.1";
-import { pgTable, text, timestamp, uuid } from "drizzle-orm@0.45.1/pg-core";
-import { drizzle } from "drizzle-orm@0.45.1/postgres";
+import { SQL } from "bun";
 import { ModalClient } from "modal@0.6.1";
-import postgres from "postgres@3.4.8";
 
 // ── Configuration ───────────────────────────────────────────────────
 
 const DATABASE_URL = process.env.DATABASE_URL;
+const MODAL_TOKEN_ID = process.env.MODAL_TOKEN_ID;
+const MODAL_TOKEN_SECRET = process.env.MODAL_TOKEN_SECRET;
 const MODAL_APP_NAME = process.env.MODAL_APP_NAME || "gondola";
 
-if (!DATABASE_URL) {
+const missingVars = [
+	!DATABASE_URL && "DATABASE_URL",
+	!MODAL_TOKEN_ID && "MODAL_TOKEN_ID",
+	!MODAL_TOKEN_SECRET && "MODAL_TOKEN_SECRET",
+].filter(Boolean);
+
+if (missingVars.length > 0) {
 	console.error(
 		JSON.stringify({
 			timestamp: new Date().toISOString(),
 			level: "error",
-			message: "DATABASE_URL environment variable is not set",
+			message: `Missing required environment variables: ${missingVars.join(", ")}`,
 		}),
 	);
 	process.exit(1);
 }
 
-// ── Inline Schema Definition ────────────────────────────────────────
+// ── Session type ────────────────────────────────────────────────────
 
-// Sessions table schema (simplified - status as text to avoid enum issues)
-const sessions = pgTable("sessions", {
-	id: uuid("id").primaryKey().defaultRandom(),
-	projectId: uuid("project_id").notNull(),
-	modalSandboxId: text("modal_sandbox_id"),
-	opencodeUrl: text("opencode_url"),
-	status: text("status").notNull().default("creating"),
-	latestSnapshotImageId: text("latest_snapshot_image_id"),
-	lastSnapshotAt: timestamp("last_snapshot_at", { withTimezone: true }),
-	createdAt: timestamp("created_at", { withTimezone: true })
-		.notNull()
-		.defaultNow(),
-	updatedAt: timestamp("updated_at", { withTimezone: true })
-		.notNull()
-		.defaultNow(),
-});
+interface Session {
+	id: string;
+	modal_sandbox_id: string | null;
+	latest_snapshot_image_id: string | null;
+}
 
 // ── Logger ─────────────────────────────────────────────────────────
 
@@ -74,11 +68,11 @@ function log(
 
 async function checkSessionHealth(
 	client: ModalClient,
-	db: ReturnType<typeof drizzle>,
-	session: typeof sessions.$inferSelect,
+	sql: SQL,
+	session: Session,
 ) {
 	const sessionId = session.id;
-	const sandboxId = session.modalSandboxId;
+	const sandboxId = session.modal_sandbox_id;
 
 	if (!sandboxId) {
 		log("warn", "Session has no modalSandboxId, skipping", { sessionId });
@@ -110,20 +104,16 @@ async function checkSessionHealth(
 		});
 
 		// Determine new status based on whether there's a snapshot
-		const newStatus = session.latestSnapshotImageId
+		const newStatus = session.latest_snapshot_image_id
 			? "suspended"
 			: "terminated";
 
 		// Update database
-		await db
-			.update(sessions)
-			.set({
-				status: newStatus,
-				modalSandboxId: null,
-				opencodeUrl: null,
-				updatedAt: sql`now()`,
-			})
-			.where(sql`${sessions.id} = ${sessionId}`);
+		await sql`
+			UPDATE sessions
+			SET status = ${newStatus}, modal_sandbox_id = NULL, opencode_url = NULL, updated_at = now()
+			WHERE id = ${sessionId}::uuid
+		`;
 
 		log("info", "Session status updated", {
 			sessionId,
@@ -139,20 +129,16 @@ async function checkSessionHealth(
 		});
 
 		// Determine new status based on whether there's a snapshot
-		const newStatus = session.latestSnapshotImageId
+		const newStatus = session.latest_snapshot_image_id
 			? "suspended"
 			: "terminated";
 
 		// Update database
-		await db
-			.update(sessions)
-			.set({
-				status: newStatus,
-				modalSandboxId: null,
-				opencodeUrl: null,
-				updatedAt: sql`now()`,
-			})
-			.where(sql`${sessions.id} = ${sessionId}`);
+		await sql`
+			UPDATE sessions
+			SET status = ${newStatus}, modal_sandbox_id = NULL, opencode_url = NULL, updated_at = now()
+			WHERE id = ${sessionId}::uuid
+		`;
 
 		log("info", "Session status updated after missing sandbox", {
 			sessionId,
@@ -173,21 +159,24 @@ async function main() {
 
 	// Initialize database connection
 	// biome-ignore lint/style/noNonNullAssertion: DATABASE_URL is validated above
-	const pgClient = postgres(DATABASE_URL!, { prepare: false });
-	const db = drizzle(pgClient);
+	const sql = new SQL(DATABASE_URL!);
 
 	// Initialize Modal client
-	const modalClient = new ModalClient();
+	const modalClient = new ModalClient({
+		tokenId: MODAL_TOKEN_ID,
+		tokenSecret: MODAL_TOKEN_SECRET,
+	});
 	const app = await modalClient.apps.fromName(MODAL_APP_NAME, {
 		createIfMissing: true,
 	});
 
 	try {
 		// Get all running sessions
-		const runningSessions = await db
-			.select()
-			.from(sessions)
-			.where(sql`${sessions.status} = 'running'`);
+		const runningSessions = await sql<Session[]>`
+			SELECT id, modal_sandbox_id, latest_snapshot_image_id
+			FROM sessions
+			WHERE status = 'running'
+		`;
 
 		log("info", "Found running sessions", {
 			count: runningSessions.length,
@@ -200,7 +189,7 @@ async function main() {
 
 		for (const session of runningSessions) {
 			try {
-				await checkSessionHealth(modalClient, db, session);
+				await checkSessionHealth(modalClient, sql, session);
 				healthyCount++;
 			} catch (error) {
 				errorCount++;
@@ -228,7 +217,7 @@ async function main() {
 		// Don't throw - Railway Functions expects clean exit
 	} finally {
 		// Close database connection
-		await pgClient.end();
+		await sql.close();
 	}
 }
 
