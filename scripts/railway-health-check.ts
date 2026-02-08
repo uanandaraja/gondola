@@ -11,9 +11,9 @@
  * 3. Ensure DATABASE_URL and MODAL_APP_NAME env vars are set
  */
 
-import { ModalClient } from "modal@0.6.1";
 // Inline imports with versions (Railway Functions will auto-install these)
 import { SQL } from "bun";
+import { ModalClient } from "modal";
 
 // ── Configuration ───────────────────────────────────────────────────
 

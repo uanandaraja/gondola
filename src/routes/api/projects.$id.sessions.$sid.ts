@@ -2,8 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
 	jsonResponse,
 	notFoundResponse,
+	requireUser,
+	unauthorizedResponse,
 	validateUUIDs,
-	withAuth,
 } from "../../server/api-utils";
 import {
 	getSessionById,
@@ -11,32 +12,49 @@ import {
 	terminateSession,
 } from "../../server/session/index";
 
+interface RouteParams {
+	id: string;
+	sid: string;
+}
+
 export const Route = createFileRoute("/api/projects/$id/sessions/$sid")({
 	server: {
 		handlers: {
-			GET: withAuth(async ({ params, user }) => {
+			GET: async ({ params, request }) => {
+				const user = await requireUser(request);
+				if (!user) return unauthorizedResponse();
+
+				// Workaround for TanStack Start type issue - params should include parent route params
+				const { id, sid } = params as RouteParams;
+
 				const error = validateUUIDs({
-					"project ID": params.id,
-					"session ID": params.sid,
+					"project ID": id,
+					"session ID": sid,
 				});
 				if (error) return error;
 
-				const session = await getSessionById(params.sid, user.id);
+				const session = await getSessionById(sid, user.id);
 				if (!session) {
 					return notFoundResponse("Session");
 				}
 
 				return jsonResponse(session);
-			}),
-			POST: withAuth(async ({ params, user }) => {
+			},
+			POST: async ({ params, request }) => {
+				const user = await requireUser(request);
+				if (!user) return unauthorizedResponse();
+
+				// Workaround for TanStack Start type issue - params should include parent route params
+				const { id, sid } = params as RouteParams;
+
 				const error = validateUUIDs({
-					"project ID": params.id,
-					"session ID": params.sid,
+					"project ID": id,
+					"session ID": sid,
 				});
 				if (error) return error;
 
 				try {
-					const session = await resumeSession(params.sid, user.id);
+					const session = await resumeSession(sid, user.id);
 					return jsonResponse(session);
 				} catch (error) {
 					return jsonResponse(
@@ -47,17 +65,23 @@ export const Route = createFileRoute("/api/projects/$id/sessions/$sid")({
 						500,
 					);
 				}
-			}),
-			DELETE: withAuth(async ({ params, user }) => {
+			},
+			DELETE: async ({ params, request }) => {
+				const user = await requireUser(request);
+				if (!user) return unauthorizedResponse();
+
+				// Workaround for TanStack Start type issue - params should include parent route params
+				const { id, sid } = params as RouteParams;
+
 				const error = validateUUIDs({
-					"project ID": params.id,
-					"session ID": params.sid,
+					"project ID": id,
+					"session ID": sid,
 				});
 				if (error) return error;
 
-				await terminateSession(params.sid, user.id);
+				await terminateSession(sid, user.id);
 				return new Response(null, { status: 204 });
-			}),
+			},
 		},
 	},
 });

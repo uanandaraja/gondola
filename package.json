@@ -17,6 +17,7 @@
 		"db:studio": "bunx drizzle-kit studio",
 		"lint": "bunx biome check",
 		"lint:fix": "bunx biome check --write",
+		"typecheck": "tsc --noEmit",
 		"prepare": "husky"
 	},
 	"dependencies": {
@@ -44,6 +45,7 @@
 		"drizzle-kit": "^0.31.8",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.2.7",
+		"typescript": "^5.8.2",
 		"vite": "^7.1.7",
 		"vite-tsconfig-paths": "^6.0.2"
 	}

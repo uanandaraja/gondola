@@ -1,23 +1,44 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { jsonResponse, validateUUID, withAuth } from "../../server/api-utils";
+import {
+	jsonResponse,
+	requireUser,
+	unauthorizedResponse,
+	validateUUID,
+} from "../../server/api-utils";
 import { createSession, listSessions } from "../../server/session/index";
+
+interface RouteParams {
+	id: string;
+}
 
 export const Route = createFileRoute("/api/projects/$id/sessions")({
 	server: {
 		handlers: {
-			GET: withAuth(async ({ params, user }) => {
-				const error = validateUUID(params.id, "project ID");
+			GET: async ({ params, request }) => {
+				const user = await requireUser(request);
+				if (!user) return unauthorizedResponse();
+
+				// Workaround for TanStack Start type issue - params should include parent route params
+				const { id } = params as RouteParams;
+
+				const error = validateUUID(id, "project ID");
 				if (error) return error;
 
-				const sessions = await listSessions(params.id, user.id);
+				const sessions = await listSessions(id, user.id);
 				return jsonResponse({ sessions });
-			}),
-			POST: withAuth(async ({ params, user }) => {
-				const error = validateUUID(params.id, "project ID");
+			},
+			POST: async ({ params, request }) => {
+				const user = await requireUser(request);
+				if (!user) return unauthorizedResponse();
+
+				// Workaround for TanStack Start type issue - params should include parent route params
+				const { id } = params as RouteParams;
+
+				const error = validateUUID(id, "project ID");
 				if (error) return error;
 
 				try {
-					const session = await createSession(params.id, user.id);
+					const session = await createSession(id, user.id);
 					return jsonResponse(session, 201);
 				} catch (error) {
 					return jsonResponse(
@@ -28,7 +49,7 @@ export const Route = createFileRoute("/api/projects/$id/sessions")({
 						500,
 					);
 				}
-			}),
+			},
 		},
 	},
 });
