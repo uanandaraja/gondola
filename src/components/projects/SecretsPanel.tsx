@@ -254,33 +254,35 @@ export function SecretsPanel({ projectId, secrets }: SecretsPanelProps) {
 							{editingSecretId === secret.id ? (
 								<form
 									onSubmit={(e) => handleUpdateSubmit(e, secret.id)}
-									className="flex flex-col sm:flex-row sm:items-center gap-3"
+									className="flex flex-col gap-1"
 								>
-									<span className="font-mono text-sm shrink-0 truncate">
-										{secret.key}
-									</span>
-									<div className="flex items-center gap-3 flex-1">
-										<input
-											type="text"
-											value={editValue}
-											onChange={(e) => setEditValue(e.target.value)}
-											className="flex-1 min-w-0 px-3 py-1.5 text-sm border border-border-light bg-bg-secondary text-text font-mono focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-150"
-										/>
-										<button
-											type="submit"
-											disabled={updateSecretMutation.isPending}
-											className="text-accent hover:text-accent-hover text-sm font-semibold transition-colors duration-150 shrink-0"
-										>
-											{updateSecretMutation.isPending ? "..." : "Save"}
-										</button>
-										<button
-											type="button"
-											onClick={() => setEditingSecretId(null)}
-											className="text-text-muted hover:text-text-secondary text-sm transition-colors duration-150 shrink-0"
-										>
-											Cancel
-										</button>
+									<div className="flex items-center justify-between">
+										<span className="font-mono text-sm truncate">
+											{secret.key}
+										</span>
+										<div className="flex items-center gap-3">
+											<button
+												type="submit"
+												disabled={updateSecretMutation.isPending}
+												className="text-accent hover:text-accent-hover text-sm font-semibold transition-colors duration-150"
+											>
+												{updateSecretMutation.isPending ? "..." : "Save"}
+											</button>
+											<button
+												type="button"
+												onClick={() => setEditingSecretId(null)}
+												className="text-text-muted hover:text-text-secondary text-sm transition-colors duration-150"
+											>
+												Cancel
+											</button>
+										</div>
 									</div>
+									<input
+										type="text"
+										value={editValue}
+										onChange={(e) => setEditValue(e.target.value)}
+										className="w-full px-3 py-1.5 text-sm border border-border-light bg-bg-secondary text-text font-mono focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-150"
+									/>
 								</form>
 							) : (
 								<div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
