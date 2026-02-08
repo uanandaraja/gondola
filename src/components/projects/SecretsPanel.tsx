@@ -8,6 +8,7 @@ type SecretListItem = Pick<
 	"id" | "key" | "createdAt" | "updatedAt"
 >;
 
+import { parseEnvString } from "@/lib/parse-env";
 import {
 	addProjectSecret,
 	fetchDecryptedSecrets,
@@ -15,7 +16,6 @@ import {
 	replaceProjectSecrets,
 	updateProjectSecret,
 } from "../../server/functions";
-import { parseEnvString } from "./parse-env";
 
 interface SecretsPanelProps {
 	projectId: string;

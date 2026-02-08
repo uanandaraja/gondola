@@ -27,6 +27,7 @@
 		"better-auth": "^1.4.18",
 		"dotenv": "^17.2.3",
 		"drizzle-orm": "^0.45.1",
+		"effect": "^3.19.16",
 		"modal": "^0.6.1",
 		"nitro": "npm:nitro-nightly@latest",
 		"postgres": "^3.4.8",
