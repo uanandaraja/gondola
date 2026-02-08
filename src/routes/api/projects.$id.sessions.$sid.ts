@@ -9,7 +9,7 @@ import {
 	getSessionById,
 	resumeSession,
 	terminateSession,
-} from "../../server/session";
+} from "../../server/session/index";
 
 export const Route = createFileRoute("/api/projects/$id/sessions/$sid")({
 	server: {
