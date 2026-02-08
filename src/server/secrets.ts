@@ -1,6 +1,6 @@
 /**
  * Temporary compatibility shim for session module.
- * This file will be removed once SessionService is migrated.
+ * This file will be removed once the session module is fully migrated.
  */
 import { Effect } from "effect";
 import { runService } from "@/lib/effect";

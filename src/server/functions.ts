@@ -5,13 +5,7 @@ import { runService } from "@/lib/effect";
 import { auth } from "@/services/auth";
 import { ProjectService } from "@/services/projects";
 import { SecretService } from "@/services/secrets";
-import {
-	createSession,
-	getSessionById,
-	listSessions,
-	resumeSession,
-	terminateSession,
-} from "./session";
+import { SessionService } from "@/services/sessions";
 
 async function requireUserId(): Promise<string> {
 	const headers = getRequestHeaders();
@@ -204,33 +198,58 @@ export const fetchSessions = createServerFn({ method: "GET" })
 	.inputValidator((projectId: string) => projectId)
 	.handler(async ({ data: projectId }) => {
 		const userId = await requireUserId();
-		return await listSessions(projectId, userId);
+		return runService(
+			Effect.gen(function* () {
+				const service = yield* SessionService;
+				return yield* service.listSessions(projectId, userId);
+			}),
+		);
 	});
 
 export const fetchSession = createServerFn({ method: "GET" })
 	.inputValidator((sessionId: string) => sessionId)
 	.handler(async ({ data: sessionId }) => {
 		const userId = await requireUserId();
-		return await getSessionById(sessionId, userId);
+		return runService(
+			Effect.gen(function* () {
+				const service = yield* SessionService;
+				return yield* service.getSessionById(sessionId, userId);
+			}),
+		);
 	});
 
 export const createNewSession = createServerFn({ method: "POST" })
 	.inputValidator((projectId: string) => projectId)
 	.handler(async ({ data: projectId }) => {
 		const userId = await requireUserId();
-		return await createSession(projectId, userId);
+		return runService(
+			Effect.gen(function* () {
+				const service = yield* SessionService;
+				return yield* service.createSession(projectId, userId);
+			}),
+		);
 	});
 
 export const resumeExistingSession = createServerFn({ method: "POST" })
 	.inputValidator((sessionId: string) => sessionId)
 	.handler(async ({ data: sessionId }) => {
 		const userId = await requireUserId();
-		return await resumeSession(sessionId, userId);
+		return runService(
+			Effect.gen(function* () {
+				const service = yield* SessionService;
+				return yield* service.resumeSession(sessionId, userId);
+			}),
+		);
 	});
 
 export const removeSession = createServerFn({ method: "POST" })
 	.inputValidator((sessionId: string) => sessionId)
 	.handler(async ({ data: sessionId }) => {
 		const userId = await requireUserId();
-		await terminateSession(sessionId, userId);
+		await runService(
+			Effect.gen(function* () {
+				const service = yield* SessionService;
+				return yield* service.terminateSession(sessionId, userId);
+			}),
+		);
 	});

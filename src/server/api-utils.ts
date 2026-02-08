@@ -25,7 +25,6 @@ interface AuthenticatedContext<TParams> {
 
 /**
  * Wraps an API handler to inject authenticated user and handle unauthorized responses.
- * Returns early with 401 if user is not authenticated.
  */
 export function withAuth<TParams>(
 	handler: (ctx: AuthenticatedContext<TParams>) => Promise<Response>,
@@ -41,7 +40,6 @@ export function withAuth<TParams>(
 
 /**
  * Validates a UUID string and returns a 400 error response if invalid.
- * Returns null if valid (caller should check and early-return).
  */
 export function validateUUID(id: string, fieldName = "ID"): Response | null {
 	const validation = uuidSchema.safeParse(id);
@@ -56,7 +54,6 @@ export function validateUUID(id: string, fieldName = "ID"): Response | null {
 
 /**
  * Validates multiple UUID strings and returns a 400 error response if any are invalid.
- * Returns null if all valid.
  */
 export function validateUUIDs(ids: Record<string, string>): Response | null {
 	for (const [fieldName, id] of Object.entries(ids)) {

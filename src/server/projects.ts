@@ -1,6 +1,6 @@
 /**
  * Temporary compatibility shim for API routes.
- * This file will be removed once API routes are migrated to use Effect directly.
+ * These functions are used by the legacy API routes in src/routes/api/
  */
 import { Effect } from "effect";
 import { runService } from "@/lib/effect";
@@ -63,6 +63,15 @@ export async function deleteProject(id: string, userId: string) {
 		Effect.gen(function* () {
 			const service = yield* ProjectService;
 			return yield* service.remove(id, userId);
+		}),
+	);
+}
+
+export async function listProjectsWithSessionCounts(userId: string) {
+	return runService(
+		Effect.gen(function* () {
+			const service = yield* ProjectService;
+			return yield* service.findAllWithSessionCounts(userId);
 		}),
 	);
 }
