@@ -283,19 +283,32 @@ export function SecretsPanel({ projectId, secrets }: SecretsPanelProps) {
 									</div>
 								</form>
 							) : (
-								<div className="flex flex-col sm:flex-row sm:items-center gap-2">
-									<div className="flex items-center justify-between sm:justify-start gap-3">
+								<div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+									<div className="flex items-center justify-between">
 										<span className="font-mono text-sm truncate">
 											{secret.key}
 										</span>
-										<span className="text-text-muted text-sm font-mono sm:hidden">
-											••••••••
-										</span>
+										<div className="flex items-center gap-3 sm:hidden">
+											<button
+												type="button"
+												onClick={() => handleEditClick(secret)}
+												className="text-text-secondary hover:text-text text-sm transition-colors duration-150"
+											>
+												Edit
+											</button>
+											<button
+												type="button"
+												onClick={() => removeSecretMutation.mutate(secret.id)}
+												className="text-error/70 hover:text-error text-sm transition-colors duration-150"
+											>
+												Remove
+											</button>
+										</div>
 									</div>
-									<div className="flex items-center gap-3 sm:ml-auto">
-										<span className="text-text-muted text-sm font-mono hidden sm:inline">
-											••••••••
-										</span>
+									<span className="text-text-muted text-sm font-mono">
+										••••••••
+									</span>
+									<div className="hidden sm:flex items-center gap-3">
 										<button
 											type="button"
 											onClick={() => handleEditClick(secret)}
