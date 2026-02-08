@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { jsonResponse, validateUUID, withAuth } from "../../server/api-utils";
-import { createSession, listSessions } from "../../server/session";
+import { createSession, listSessions } from "../../server/session/index";
 
 export const Route = createFileRoute("/api/projects/$id/sessions")({
 	server: {
