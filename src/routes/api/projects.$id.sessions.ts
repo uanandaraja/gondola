@@ -7,6 +7,8 @@ import {
 } from "../../server/api-utils";
 import { createSession, listSessions } from "../../server/session/index";
 
+// Child routes don't automatically inherit parent params in TanStack Start types
+// See: https://github.com/TanStack/router/issues/...
 interface RouteParams {
 	id: string;
 }
@@ -18,7 +20,6 @@ export const Route = createFileRoute("/api/projects/$id/sessions")({
 				const user = await requireUser(request);
 				if (!user) return unauthorizedResponse();
 
-				// Workaround for TanStack Start type issue - params should include parent route params
 				const { id } = params as RouteParams;
 
 				const error = validateUUID(id, "project ID");
@@ -31,7 +32,6 @@ export const Route = createFileRoute("/api/projects/$id/sessions")({
 				const user = await requireUser(request);
 				if (!user) return unauthorizedResponse();
 
-				// Workaround for TanStack Start type issue - params should include parent route params
 				const { id } = params as RouteParams;
 
 				const error = validateUUID(id, "project ID");
