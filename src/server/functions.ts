@@ -1,21 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
-import { auth } from "../services/auth";
-import {
-	createProject,
-	deleteProject,
-	getProject,
-	listProjectsWithSessionCounts,
-	updateProject,
-} from "./projects";
-import {
-	addSecret,
-	getDecryptedSecretsForUser,
-	listSecrets,
-	removeSecret,
-	replaceAllSecrets,
-	updateSecret,
-} from "./secrets";
+import { Effect } from "effect";
+import { runService } from "@/lib/effect";
+import { auth } from "@/services/auth";
+import { ProjectService } from "@/services/projects";
+import { SecretService } from "@/services/secrets";
 import {
 	createSession,
 	getSessionById,
@@ -38,7 +27,12 @@ async function requireUserId(): Promise<string> {
 export const fetchProjects = createServerFn({ method: "GET" }).handler(
 	async () => {
 		const userId = await requireUserId();
-		return await listProjectsWithSessionCounts(userId);
+		return runService(
+			Effect.gen(function* () {
+				const service = yield* ProjectService;
+				return yield* service.findAllWithSessionCounts(userId);
+			}),
+		);
 	},
 );
 
@@ -46,7 +40,12 @@ export const fetchProject = createServerFn({ method: "GET" })
 	.inputValidator((id: string) => id)
 	.handler(async ({ data: id }) => {
 		const userId = await requireUserId();
-		return await getProject(id, userId);
+		return runService(
+			Effect.gen(function* () {
+				const service = yield* ProjectService;
+				return yield* service.findById(id, userId);
+			}),
+		);
 	});
 
 export const createNewProject = createServerFn({ method: "POST" })
@@ -60,7 +59,12 @@ export const createNewProject = createServerFn({ method: "POST" })
 	)
 	.handler(async ({ data }) => {
 		const userId = await requireUserId();
-		return await createProject(userId, data);
+		return runService(
+			Effect.gen(function* () {
+				const service = yield* ProjectService;
+				return yield* service.create(userId, data);
+			}),
+		);
 	});
 
 export const updateExistingProject = createServerFn({ method: "POST" })
@@ -75,14 +79,24 @@ export const updateExistingProject = createServerFn({ method: "POST" })
 	.handler(async ({ data }) => {
 		const userId = await requireUserId();
 		const { projectId, ...updates } = data;
-		return await updateProject(projectId, userId, updates);
+		return runService(
+			Effect.gen(function* () {
+				const service = yield* ProjectService;
+				return yield* service.update(projectId, userId, updates);
+			}),
+		);
 	});
 
 export const deleteExistingProject = createServerFn({ method: "POST" })
 	.inputValidator((id: string) => id)
 	.handler(async ({ data: id }) => {
 		const userId = await requireUserId();
-		await deleteProject(id, userId);
+		await runService(
+			Effect.gen(function* () {
+				const service = yield* ProjectService;
+				return yield* service.remove(id, userId);
+			}),
+		);
 	});
 
 // ── Secrets ─────────────────────────────────────────────────────────
@@ -91,14 +105,24 @@ export const fetchProjectSecrets = createServerFn({ method: "GET" })
 	.inputValidator((projectId: string) => projectId)
 	.handler(async ({ data: projectId }) => {
 		const userId = await requireUserId();
-		return await listSecrets(projectId, userId);
+		return runService(
+			Effect.gen(function* () {
+				const service = yield* SecretService;
+				return yield* service.listSecrets(projectId, userId);
+			}),
+		);
 	});
 
 export const fetchDecryptedSecrets = createServerFn({ method: "GET" })
 	.inputValidator((projectId: string) => projectId)
 	.handler(async ({ data: projectId }) => {
 		const userId = await requireUserId();
-		return await getDecryptedSecretsForUser(projectId, userId);
+		return runService(
+			Effect.gen(function* () {
+				const service = yield* SecretService;
+				return yield* service.getDecryptedSecretsForUser(projectId, userId);
+			}),
+		);
 	});
 
 export const addProjectSecret = createServerFn({ method: "POST" })
@@ -107,7 +131,17 @@ export const addProjectSecret = createServerFn({ method: "POST" })
 	)
 	.handler(async ({ data }) => {
 		const userId = await requireUserId();
-		return await addSecret(data.projectId, userId, data.key, data.value);
+		return runService(
+			Effect.gen(function* () {
+				const service = yield* SecretService;
+				return yield* service.addSecret(
+					data.projectId,
+					userId,
+					data.key,
+					data.value,
+				);
+			}),
+		);
 	});
 
 export const replaceProjectSecrets = createServerFn({ method: "POST" })
@@ -117,7 +151,16 @@ export const replaceProjectSecrets = createServerFn({ method: "POST" })
 	)
 	.handler(async ({ data }) => {
 		const userId = await requireUserId();
-		await replaceAllSecrets(data.projectId, userId, data.entries);
+		await runService(
+			Effect.gen(function* () {
+				const service = yield* SecretService;
+				return yield* service.replaceAllSecrets(
+					data.projectId,
+					userId,
+					data.entries,
+				);
+			}),
+		);
 	});
 
 export const updateProjectSecret = createServerFn({ method: "POST" })
@@ -126,14 +169,33 @@ export const updateProjectSecret = createServerFn({ method: "POST" })
 	)
 	.handler(async ({ data }) => {
 		const userId = await requireUserId();
-		await updateSecret(data.secretId, data.projectId, userId, data.value);
+		await runService(
+			Effect.gen(function* () {
+				const service = yield* SecretService;
+				return yield* service.updateSecret(
+					data.secretId,
+					data.projectId,
+					userId,
+					data.value,
+				);
+			}),
+		);
 	});
 
 export const removeProjectSecret = createServerFn({ method: "POST" })
 	.inputValidator((data: { projectId: string; secretId: string }) => data)
 	.handler(async ({ data }) => {
 		const userId = await requireUserId();
-		await removeSecret(data.secretId, data.projectId, userId);
+		await runService(
+			Effect.gen(function* () {
+				const service = yield* SecretService;
+				return yield* service.removeSecret(
+					data.secretId,
+					data.projectId,
+					userId,
+				);
+			}),
+		);
 	});
 
 // ── Sessions ────────────────────────────────────────────────────────

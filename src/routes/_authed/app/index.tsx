@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
-import { createNewProject, fetchProjects } from "@/services/projects";
+import { createNewProject, fetchProjects } from "../../../server/functions";
 
 export const Route = createFileRoute("/_authed/app/")({
 	loader: async () => {

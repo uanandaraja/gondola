@@ -34,14 +34,7 @@ export const fetchProject = createServerFn({ method: "GET" })
 			Effect.gen(function* () {
 				const service = yield* ProjectService;
 				return yield* service.findById(id, userId);
-			}).pipe(
-				Effect.catchTag("ProjectNotFoundError", (e) =>
-					Effect.succeed({ error: "not_found" as const, message: e.message }),
-				),
-				Effect.catchTag("DatabaseError", (e) =>
-					Effect.succeed({ error: "db_error" as const, message: e.message }),
-				),
-			),
+			}),
 		);
 	});
 
@@ -60,18 +53,7 @@ export const createNewProject = createServerFn({ method: "POST" })
 			Effect.gen(function* () {
 				const service = yield* ProjectService;
 				return yield* service.create(userId, data);
-			}).pipe(
-				Effect.catchTag("ProjectValidationError", (e) =>
-					Effect.succeed({
-						error: "validation" as const,
-						field: e.field,
-						message: e.message,
-					}),
-				),
-				Effect.catchTag("DatabaseError", (e) =>
-					Effect.succeed({ error: "db_error" as const, message: e.message }),
-				),
-			),
+			}),
 		);
 	});
 
@@ -91,21 +73,7 @@ export const updateExistingProject = createServerFn({ method: "POST" })
 			Effect.gen(function* () {
 				const service = yield* ProjectService;
 				return yield* service.update(projectId, userId, updates);
-			}).pipe(
-				Effect.catchTag("ProjectNotFoundError", (e) =>
-					Effect.succeed({ error: "not_found" as const, message: e.message }),
-				),
-				Effect.catchTag("ProjectValidationError", (e) =>
-					Effect.succeed({
-						error: "validation" as const,
-						field: e.field,
-						message: e.message,
-					}),
-				),
-				Effect.catchTag("DatabaseError", (e) =>
-					Effect.succeed({ error: "db_error" as const, message: e.message }),
-				),
-			),
+			}),
 		);
 	});
 
@@ -113,14 +81,10 @@ export const deleteExistingProject = createServerFn({ method: "POST" })
 	.inputValidator((id: string) => id)
 	.handler(async ({ data: id }) => {
 		const userId = await requireUserId();
-		return runService(
+		await runService(
 			Effect.gen(function* () {
 				const service = yield* ProjectService;
 				return yield* service.remove(id, userId);
-			}).pipe(
-				Effect.catchTag("DatabaseError", (e) =>
-					Effect.succeed({ error: "db_error" as const, message: e.message }),
-				),
-			),
+			}),
 		);
 	});
