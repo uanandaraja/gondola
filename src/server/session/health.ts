@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db, schema } from "../../db";
+import { HEALTH_CHECK_INTERVAL_MS } from "./constants";
 import { takeSnapshot } from "./snapshots";
 import { activeSessions } from "./state";
 
@@ -54,5 +55,5 @@ export function startHealthMonitoring(): ReturnType<typeof setInterval> {
 				await handleSessionDeath(sessionId);
 			}
 		}
-	}, 60000);
+	}, HEALTH_CHECK_INTERVAL_MS);
 }

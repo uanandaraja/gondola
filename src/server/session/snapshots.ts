@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db, schema } from "../../db";
-import { SNAPSHOT_INTERVAL_MS } from "./constants";
+import { SNAPSHOT_INTERVAL_MS, SNAPSHOT_TIMEOUT_MS } from "./constants";
 import { activeSessions } from "./state";
 
 export async function takeSnapshot(sessionId: string): Promise<string | null> {
@@ -9,7 +9,7 @@ export async function takeSnapshot(sessionId: string): Promise<string | null> {
 
 	try {
 		console.log(`[${sessionId}] Taking filesystem snapshot...`);
-		const image = await active.sandbox.snapshotFilesystem(60000);
+		const image = await active.sandbox.snapshotFilesystem(SNAPSHOT_TIMEOUT_MS);
 		const imageId = image.imageId;
 
 		await db

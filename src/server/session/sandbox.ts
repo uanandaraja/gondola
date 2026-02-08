@@ -1,4 +1,5 @@
 import type { Sandbox } from "modal";
+import { OPENCODE_STARTUP_WAIT_MS } from "./constants";
 import {
 	shellEscape,
 	validateBranchName,
@@ -128,7 +129,7 @@ export async function startOpencodeServer(sandbox: Sandbox, sessionId: string) {
 		])
 		.catch(() => {});
 
-	await new Promise((resolve) => setTimeout(resolve, 6000));
+	await new Promise((resolve) => setTimeout(resolve, OPENCODE_STARTUP_WAIT_MS));
 
 	const logCheck = await sandbox.exec(["cat", "/tmp/opencode.log"]);
 	const logContent = await logCheck.stdout.readText();

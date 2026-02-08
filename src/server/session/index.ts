@@ -5,7 +5,7 @@ import type { SessionRecord } from "../../db/schema";
 import { getProject } from "../projects";
 import { getDecryptedSecrets } from "../secrets";
 import { configureGitAuth, getGitHubAccount, getUserInfo } from "./auth";
-import { MODAL_APP_NAME } from "./constants";
+import { MODAL_APP_NAME, SANDBOX_TIMEOUT_MS } from "./constants";
 // Start health monitoring on module load
 import { handleSessionDeath, startHealthMonitoring } from "./health";
 import {
@@ -66,8 +66,8 @@ export async function createSession(
 
 	// Create sandbox
 	const sandbox = await client.sandboxes.create(app, image, {
-		timeoutMs: 7200000,
-		idleTimeoutMs: 7200000,
+		timeoutMs: SANDBOX_TIMEOUT_MS,
+		idleTimeoutMs: SANDBOX_TIMEOUT_MS,
 		encryptedPorts: [4096],
 		secrets,
 	});
@@ -189,8 +189,8 @@ export async function resumeSession(
 
 	// Create sandbox from snapshot image
 	const sandbox = await client.sandboxes.create(app, snapshotImage, {
-		timeoutMs: 7200000,
-		idleTimeoutMs: 7200000,
+		timeoutMs: SANDBOX_TIMEOUT_MS,
+		idleTimeoutMs: SANDBOX_TIMEOUT_MS,
 		encryptedPorts: [4096],
 		secrets,
 	});
