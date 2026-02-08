@@ -73,60 +73,68 @@ export async function createSession(
 	});
 	console.log(`[${sessionId}] Sandbox created: ${sandbox.sandboxId}`);
 
-	// Setup from scratch: clone, install, configure
-	await setupSandboxFromScratch(
-		sandbox,
-		sessionId,
-		project.githubUrl,
-		project.branch,
-	);
-
-	// Configure git and gh CLI auth
-	if (ghAccount?.accessToken && userInfo) {
-		await configureGitAuth(
+	try {
+		// Setup from scratch: clone, install, configure
+		await setupSandboxFromScratch(
 			sandbox,
 			sessionId,
-			ghAccount.accessToken,
-			userInfo.name,
-			userInfo.email,
+			project.githubUrl,
+			project.branch,
 		);
+
+		// Configure git and gh CLI auth
+		if (ghAccount?.accessToken && userInfo) {
+			await configureGitAuth(
+				sandbox,
+				sessionId,
+				ghAccount.accessToken,
+				userInfo.name,
+				userInfo.email,
+			);
+		}
+
+		// Write project secrets as .env file in repo
+		await writeSecretsEnvFile(sandbox, sessionId, projectSecrets);
+
+		// Start opencode
+		await startOpencodeServer(sandbox, sessionId);
+
+		// Get tunnel URL
+		const tunnels = await sandbox.tunnels();
+		const opencodeUrl = tunnels[4096]?.url;
+		if (!opencodeUrl) {
+			throw new Error("Failed to get opencode tunnel URL");
+		}
+		console.log(`[${sessionId}] Opencode URL: ${opencodeUrl}`);
+
+		// Insert session record
+		const [inserted] = await db
+			.insert(schema.sessions)
+			.values({
+				id: sessionId,
+				projectId,
+				modalSandboxId: sandbox.sandboxId,
+				opencodeUrl,
+				status: "running",
+			})
+			.returning();
+
+		// Start snapshot scheduler and track
+		const snapshotInterval = startSnapshotScheduler(sessionId);
+		activeSessions.set(sessionId, { sandbox, snapshotInterval });
+
+		// Take initial snapshot
+		takeSnapshot(sessionId).catch(() => {});
+
+		return inserted;
+	} catch (error) {
+		// Clean up sandbox if anything fails to prevent resource leaks
+		console.error(
+			`[${sessionId}] Session creation failed, cleaning up sandbox...`,
+		);
+		await sandbox.terminate().catch(() => {});
+		throw error;
 	}
-
-	// Write project secrets as .env file in repo
-	await writeSecretsEnvFile(sandbox, sessionId, projectSecrets);
-
-	// Start opencode
-	await startOpencodeServer(sandbox, sessionId);
-
-	// Get tunnel URL
-	const tunnels = await sandbox.tunnels();
-	const opencodeUrl = tunnels[4096]?.url;
-	if (!opencodeUrl) {
-		await sandbox.terminate();
-		throw new Error("Failed to get opencode tunnel URL");
-	}
-	console.log(`[${sessionId}] Opencode URL: ${opencodeUrl}`);
-
-	// Insert session record
-	const [inserted] = await db
-		.insert(schema.sessions)
-		.values({
-			id: sessionId,
-			projectId,
-			modalSandboxId: sandbox.sandboxId,
-			opencodeUrl,
-			status: "running",
-		})
-		.returning();
-
-	// Start snapshot scheduler and track
-	const snapshotInterval = startSnapshotScheduler(sessionId);
-	activeSessions.set(sessionId, { sandbox, snapshotInterval });
-
-	// Take initial snapshot
-	takeSnapshot(sessionId).catch(() => {});
-
-	return inserted;
 }
 
 export async function resumeSession(
