@@ -6,6 +6,9 @@
 		"module": "ESNext",
 		"target": "ES2022",
 		"esModuleInterop": true,
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"paths": {
+			"@/*": ["./src/*"]
+		}
 	}
 }
