@@ -1,6 +1,10 @@
 import { and, count, eq, ne } from "drizzle-orm";
 import { db, schema } from "../db";
 import type { ProjectRecord } from "../db/schema";
+import {
+	validateBranchName,
+	validateGitHubUrl,
+} from "../server/session/validation";
 
 export async function createProject(
 	userId: string,
@@ -11,6 +15,14 @@ export async function createProject(
 		description?: string;
 	},
 ): Promise<ProjectRecord> {
+	// Validate GitHub URL format
+	validateGitHubUrl(data.githubUrl);
+
+	// Validate branch name if provided
+	if (data.branch) {
+		validateBranchName(data.branch);
+	}
+
 	const [project] = await db
 		.insert(schema.projects)
 		.values({

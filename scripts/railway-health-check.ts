@@ -70,13 +70,13 @@ async function checkSessionHealth(
 	client: ModalClient,
 	sql: SQL,
 	session: Session,
-) {
+): Promise<boolean> {
 	const sessionId = session.id;
 	const sandboxId = session.modal_sandbox_id;
 
 	if (!sandboxId) {
 		log("warn", "Session has no modalSandboxId, skipping", { sessionId });
-		return;
+		return false;
 	}
 
 	try {
@@ -93,7 +93,7 @@ async function checkSessionHealth(
 				sandboxId,
 				status: "running",
 			});
-			return;
+			return false;
 		}
 
 		// Sandbox has exited - need to update status
@@ -120,6 +120,8 @@ async function checkSessionHealth(
 			oldStatus: "running",
 			newStatus,
 		});
+
+		return true;
 	} catch (error) {
 		// Sandbox not found in Modal - it's been terminated externally
 		log("warn", "Sandbox not found in Modal, marking as terminated", {
@@ -145,6 +147,8 @@ async function checkSessionHealth(
 			oldStatus: "running",
 			newStatus,
 		});
+
+		return true;
 	}
 }
 
@@ -183,13 +187,21 @@ async function main() {
 
 		// Check each session
 		let healthyCount = 0;
-		const updatedCount = 0;
+		let updatedCount = 0;
 		let errorCount = 0;
 
 		for (const session of runningSessions) {
 			try {
-				await checkSessionHealth(modalClient, sql, session);
-				healthyCount++;
+				const wasUpdated: boolean = await checkSessionHealth(
+					modalClient,
+					sql,
+					session,
+				);
+				if (wasUpdated) {
+					updatedCount++;
+				} else {
+					healthyCount++;
+				}
 			} catch (error) {
 				errorCount++;
 				log("error", "Error checking session", {
