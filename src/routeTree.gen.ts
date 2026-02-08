@@ -8,364 +8,363 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as AuthedRouteImport } from "./routes/_authed";
-import { Route as AuthedAppRouteImport } from "./routes/_authed/app";
-import { Route as AuthedAppIndexRouteImport } from "./routes/_authed/app/index";
-import { Route as AuthedAppProjectsProjectIdRouteImport } from "./routes/_authed/app/projects.$projectId";
-import { Route as AuthedAppProjectsProjectIdSessionsSessionIdRouteImport } from "./routes/_authed/app/projects.$projectId_.sessions.$sessionId";
-import { Route as ApiAuthSplatRouteImport } from "./routes/api/auth/$";
-import { Route as ApiHealthRouteImport } from "./routes/api/health";
-import { Route as ApiProjectsRouteImport } from "./routes/api/projects";
-import { Route as ApiProjectsIdRouteImport } from "./routes/api/projects.$id";
-import { Route as ApiProjectsIdSessionsRouteImport } from "./routes/api/projects.$id.sessions";
-import { Route as ApiProjectsIdSessionsSidRouteImport } from "./routes/api/projects.$id.sessions.$sid";
-import { Route as AuthRouteImport } from "./routes/auth";
-import { Route as IndexRouteImport } from "./routes/index";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthedRouteImport } from './routes/_authed'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiProjectsRouteImport } from './routes/api/projects'
+import { Route as ApiHealthRouteImport } from './routes/api/health'
+import { Route as AuthedAppRouteImport } from './routes/_authed/app'
+import { Route as AuthedAppIndexRouteImport } from './routes/_authed/app/index'
+import { Route as ApiProjectsIdRouteImport } from './routes/api/projects.$id'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiProjectsIdSessionsRouteImport } from './routes/api/projects.$id.sessions'
+import { Route as AuthedAppProjectsProjectIdRouteImport } from './routes/_authed/app/projects.$projectId'
+import { Route as ApiProjectsIdSessionsSidRouteImport } from './routes/api/projects.$id.sessions.$sid'
+import { Route as AuthedAppProjectsProjectIdSessionsSessionIdRouteImport } from './routes/_authed/app/projects.$projectId_.sessions.$sessionId'
 
 const AuthRoute = AuthRouteImport.update({
-	id: "/auth",
-	path: "/auth",
-	getParentRoute: () => rootRouteImport,
-} as any);
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthedRoute = AuthedRouteImport.update({
-	id: "/_authed",
-	getParentRoute: () => rootRouteImport,
-} as any);
+  id: '/_authed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
-	id: "/",
-	path: "/",
-	getParentRoute: () => rootRouteImport,
-} as any);
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiProjectsRoute = ApiProjectsRouteImport.update({
-	id: "/api/projects",
-	path: "/api/projects",
-	getParentRoute: () => rootRouteImport,
-} as any);
+  id: '/api/projects',
+  path: '/api/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiHealthRoute = ApiHealthRouteImport.update({
-	id: "/api/health",
-	path: "/api/health",
-	getParentRoute: () => rootRouteImport,
-} as any);
+  id: '/api/health',
+  path: '/api/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthedAppRoute = AuthedAppRouteImport.update({
-	id: "/app",
-	path: "/app",
-	getParentRoute: () => AuthedRoute,
-} as any);
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => AuthedRoute,
+} as any)
 const AuthedAppIndexRoute = AuthedAppIndexRouteImport.update({
-	id: "/",
-	path: "/",
-	getParentRoute: () => AuthedAppRoute,
-} as any);
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthedAppRoute,
+} as any)
 const ApiProjectsIdRoute = ApiProjectsIdRouteImport.update({
-	id: "/$id",
-	path: "/$id",
-	getParentRoute: () => ApiProjectsRoute,
-} as any);
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiProjectsRoute,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-	id: "/api/auth/$",
-	path: "/api/auth/$",
-	getParentRoute: () => rootRouteImport,
-} as any);
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiProjectsIdSessionsRoute = ApiProjectsIdSessionsRouteImport.update({
-	id: "/sessions",
-	path: "/sessions",
-	getParentRoute: () => ApiProjectsIdRoute,
-} as any);
+  id: '/sessions',
+  path: '/sessions',
+  getParentRoute: () => ApiProjectsIdRoute,
+} as any)
 const AuthedAppProjectsProjectIdRoute =
-	AuthedAppProjectsProjectIdRouteImport.update({
-		id: "/projects/$projectId",
-		path: "/projects/$projectId",
-		getParentRoute: () => AuthedAppRoute,
-	} as any);
+  AuthedAppProjectsProjectIdRouteImport.update({
+    id: '/projects/$projectId',
+    path: '/projects/$projectId',
+    getParentRoute: () => AuthedAppRoute,
+  } as any)
 const ApiProjectsIdSessionsSidRoute =
-	ApiProjectsIdSessionsSidRouteImport.update({
-		id: "/$sid",
-		path: "/$sid",
-		getParentRoute: () => ApiProjectsIdSessionsRoute,
-	} as any);
+  ApiProjectsIdSessionsSidRouteImport.update({
+    id: '/$sid',
+    path: '/$sid',
+    getParentRoute: () => ApiProjectsIdSessionsRoute,
+  } as any)
 const AuthedAppProjectsProjectIdSessionsSessionIdRoute =
-	AuthedAppProjectsProjectIdSessionsSessionIdRouteImport.update({
-		id: "/projects/$projectId_/sessions/$sessionId",
-		path: "/projects/$projectId/sessions/$sessionId",
-		getParentRoute: () => AuthedAppRoute,
-	} as any);
+  AuthedAppProjectsProjectIdSessionsSessionIdRouteImport.update({
+    id: '/projects/$projectId_/sessions/$sessionId',
+    path: '/projects/$projectId/sessions/$sessionId',
+    getParentRoute: () => AuthedAppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-	"/": typeof IndexRoute;
-	"/auth": typeof AuthRoute;
-	"/app": typeof AuthedAppRouteWithChildren;
-	"/api/health": typeof ApiHealthRoute;
-	"/api/projects": typeof ApiProjectsRouteWithChildren;
-	"/api/auth/$": typeof ApiAuthSplatRoute;
-	"/api/projects/$id": typeof ApiProjectsIdRouteWithChildren;
-	"/app/": typeof AuthedAppIndexRoute;
-	"/app/projects/$projectId": typeof AuthedAppProjectsProjectIdRoute;
-	"/api/projects/$id/sessions": typeof ApiProjectsIdSessionsRouteWithChildren;
-	"/api/projects/$id/sessions/$sid": typeof ApiProjectsIdSessionsSidRoute;
-	"/app/projects/$projectId/sessions/$sessionId": typeof AuthedAppProjectsProjectIdSessionsSessionIdRoute;
+  '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/app': typeof AuthedAppRouteWithChildren
+  '/api/health': typeof ApiHealthRoute
+  '/api/projects': typeof ApiProjectsRouteWithChildren
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/projects/$id': typeof ApiProjectsIdRouteWithChildren
+  '/app/': typeof AuthedAppIndexRoute
+  '/app/projects/$projectId': typeof AuthedAppProjectsProjectIdRoute
+  '/api/projects/$id/sessions': typeof ApiProjectsIdSessionsRouteWithChildren
+  '/api/projects/$id/sessions/$sid': typeof ApiProjectsIdSessionsSidRoute
+  '/app/projects/$projectId/sessions/$sessionId': typeof AuthedAppProjectsProjectIdSessionsSessionIdRoute
 }
 export interface FileRoutesByTo {
-	"/": typeof IndexRoute;
-	"/auth": typeof AuthRoute;
-	"/api/health": typeof ApiHealthRoute;
-	"/api/projects": typeof ApiProjectsRouteWithChildren;
-	"/api/auth/$": typeof ApiAuthSplatRoute;
-	"/api/projects/$id": typeof ApiProjectsIdRouteWithChildren;
-	"/app": typeof AuthedAppIndexRoute;
-	"/app/projects/$projectId": typeof AuthedAppProjectsProjectIdRoute;
-	"/api/projects/$id/sessions": typeof ApiProjectsIdSessionsRouteWithChildren;
-	"/api/projects/$id/sessions/$sid": typeof ApiProjectsIdSessionsSidRoute;
-	"/app/projects/$projectId/sessions/$sessionId": typeof AuthedAppProjectsProjectIdSessionsSessionIdRoute;
+  '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/api/health': typeof ApiHealthRoute
+  '/api/projects': typeof ApiProjectsRouteWithChildren
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/projects/$id': typeof ApiProjectsIdRouteWithChildren
+  '/app': typeof AuthedAppIndexRoute
+  '/app/projects/$projectId': typeof AuthedAppProjectsProjectIdRoute
+  '/api/projects/$id/sessions': typeof ApiProjectsIdSessionsRouteWithChildren
+  '/api/projects/$id/sessions/$sid': typeof ApiProjectsIdSessionsSidRoute
+  '/app/projects/$projectId/sessions/$sessionId': typeof AuthedAppProjectsProjectIdSessionsSessionIdRoute
 }
 export interface FileRoutesById {
-	__root__: typeof rootRouteImport;
-	"/": typeof IndexRoute;
-	"/_authed": typeof AuthedRouteWithChildren;
-	"/auth": typeof AuthRoute;
-	"/_authed/app": typeof AuthedAppRouteWithChildren;
-	"/api/health": typeof ApiHealthRoute;
-	"/api/projects": typeof ApiProjectsRouteWithChildren;
-	"/api/auth/$": typeof ApiAuthSplatRoute;
-	"/api/projects/$id": typeof ApiProjectsIdRouteWithChildren;
-	"/_authed/app/": typeof AuthedAppIndexRoute;
-	"/_authed/app/projects/$projectId": typeof AuthedAppProjectsProjectIdRoute;
-	"/api/projects/$id/sessions": typeof ApiProjectsIdSessionsRouteWithChildren;
-	"/api/projects/$id/sessions/$sid": typeof ApiProjectsIdSessionsSidRoute;
-	"/_authed/app/projects/$projectId_/sessions/$sessionId": typeof AuthedAppProjectsProjectIdSessionsSessionIdRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/_authed': typeof AuthedRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authed/app': typeof AuthedAppRouteWithChildren
+  '/api/health': typeof ApiHealthRoute
+  '/api/projects': typeof ApiProjectsRouteWithChildren
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/projects/$id': typeof ApiProjectsIdRouteWithChildren
+  '/_authed/app/': typeof AuthedAppIndexRoute
+  '/_authed/app/projects/$projectId': typeof AuthedAppProjectsProjectIdRoute
+  '/api/projects/$id/sessions': typeof ApiProjectsIdSessionsRouteWithChildren
+  '/api/projects/$id/sessions/$sid': typeof ApiProjectsIdSessionsSidRoute
+  '/_authed/app/projects/$projectId_/sessions/$sessionId': typeof AuthedAppProjectsProjectIdSessionsSessionIdRoute
 }
 export interface FileRouteTypes {
-	fileRoutesByFullPath: FileRoutesByFullPath;
-	fullPaths:
-		| "/"
-		| "/auth"
-		| "/app"
-		| "/api/health"
-		| "/api/projects"
-		| "/api/auth/$"
-		| "/api/projects/$id"
-		| "/app/"
-		| "/app/projects/$projectId"
-		| "/api/projects/$id/sessions"
-		| "/api/projects/$id/sessions/$sid"
-		| "/app/projects/$projectId/sessions/$sessionId";
-	fileRoutesByTo: FileRoutesByTo;
-	to:
-		| "/"
-		| "/auth"
-		| "/api/health"
-		| "/api/projects"
-		| "/api/auth/$"
-		| "/api/projects/$id"
-		| "/app"
-		| "/app/projects/$projectId"
-		| "/api/projects/$id/sessions"
-		| "/api/projects/$id/sessions/$sid"
-		| "/app/projects/$projectId/sessions/$sessionId";
-	id:
-		| "__root__"
-		| "/"
-		| "/_authed"
-		| "/auth"
-		| "/_authed/app"
-		| "/api/health"
-		| "/api/projects"
-		| "/api/auth/$"
-		| "/api/projects/$id"
-		| "/_authed/app/"
-		| "/_authed/app/projects/$projectId"
-		| "/api/projects/$id/sessions"
-		| "/api/projects/$id/sessions/$sid"
-		| "/_authed/app/projects/$projectId_/sessions/$sessionId";
-	fileRoutesById: FileRoutesById;
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/app'
+    | '/api/health'
+    | '/api/projects'
+    | '/api/auth/$'
+    | '/api/projects/$id'
+    | '/app/'
+    | '/app/projects/$projectId'
+    | '/api/projects/$id/sessions'
+    | '/api/projects/$id/sessions/$sid'
+    | '/app/projects/$projectId/sessions/$sessionId'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/auth'
+    | '/api/health'
+    | '/api/projects'
+    | '/api/auth/$'
+    | '/api/projects/$id'
+    | '/app'
+    | '/app/projects/$projectId'
+    | '/api/projects/$id/sessions'
+    | '/api/projects/$id/sessions/$sid'
+    | '/app/projects/$projectId/sessions/$sessionId'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authed'
+    | '/auth'
+    | '/_authed/app'
+    | '/api/health'
+    | '/api/projects'
+    | '/api/auth/$'
+    | '/api/projects/$id'
+    | '/_authed/app/'
+    | '/_authed/app/projects/$projectId'
+    | '/api/projects/$id/sessions'
+    | '/api/projects/$id/sessions/$sid'
+    | '/_authed/app/projects/$projectId_/sessions/$sessionId'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-	IndexRoute: typeof IndexRoute;
-	AuthedRoute: typeof AuthedRouteWithChildren;
-	AuthRoute: typeof AuthRoute;
-	ApiHealthRoute: typeof ApiHealthRoute;
-	ApiProjectsRoute: typeof ApiProjectsRouteWithChildren;
-	ApiAuthSplatRoute: typeof ApiAuthSplatRoute;
+  IndexRoute: typeof IndexRoute
+  AuthedRoute: typeof AuthedRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  ApiHealthRoute: typeof ApiHealthRoute
+  ApiProjectsRoute: typeof ApiProjectsRouteWithChildren
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
-declare module "@tanstack/react-router" {
-	interface FileRoutesByPath {
-		"/auth": {
-			id: "/auth";
-			path: "/auth";
-			fullPath: "/auth";
-			preLoaderRoute: typeof AuthRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/_authed": {
-			id: "/_authed";
-			path: "";
-			fullPath: "";
-			preLoaderRoute: typeof AuthedRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/": {
-			id: "/";
-			path: "/";
-			fullPath: "/";
-			preLoaderRoute: typeof IndexRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/api/projects": {
-			id: "/api/projects";
-			path: "/api/projects";
-			fullPath: "/api/projects";
-			preLoaderRoute: typeof ApiProjectsRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/api/health": {
-			id: "/api/health";
-			path: "/api/health";
-			fullPath: "/api/health";
-			preLoaderRoute: typeof ApiHealthRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/_authed/app": {
-			id: "/_authed/app";
-			path: "/app";
-			fullPath: "/app";
-			preLoaderRoute: typeof AuthedAppRouteImport;
-			parentRoute: typeof AuthedRoute;
-		};
-		"/_authed/app/": {
-			id: "/_authed/app/";
-			path: "/";
-			fullPath: "/app/";
-			preLoaderRoute: typeof AuthedAppIndexRouteImport;
-			parentRoute: typeof AuthedAppRoute;
-		};
-		"/api/projects/$id": {
-			id: "/api/projects/$id";
-			path: "/$id";
-			fullPath: "/api/projects/$id";
-			preLoaderRoute: typeof ApiProjectsIdRouteImport;
-			parentRoute: typeof ApiProjectsRoute;
-		};
-		"/api/auth/$": {
-			id: "/api/auth/$";
-			path: "/api/auth/$";
-			fullPath: "/api/auth/$";
-			preLoaderRoute: typeof ApiAuthSplatRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/api/projects/$id/sessions": {
-			id: "/api/projects/$id/sessions";
-			path: "/sessions";
-			fullPath: "/api/projects/$id/sessions";
-			preLoaderRoute: typeof ApiProjectsIdSessionsRouteImport;
-			parentRoute: typeof ApiProjectsIdRoute;
-		};
-		"/_authed/app/projects/$projectId": {
-			id: "/_authed/app/projects/$projectId";
-			path: "/projects/$projectId";
-			fullPath: "/app/projects/$projectId";
-			preLoaderRoute: typeof AuthedAppProjectsProjectIdRouteImport;
-			parentRoute: typeof AuthedAppRoute;
-		};
-		"/api/projects/$id/sessions/$sid": {
-			id: "/api/projects/$id/sessions/$sid";
-			path: "/$sid";
-			fullPath: "/api/projects/$id/sessions/$sid";
-			preLoaderRoute: typeof ApiProjectsIdSessionsSidRouteImport;
-			parentRoute: typeof ApiProjectsIdSessionsRoute;
-		};
-		"/_authed/app/projects/$projectId_/sessions/$sessionId": {
-			id: "/_authed/app/projects/$projectId_/sessions/$sessionId";
-			path: "/projects/$projectId/sessions/$sessionId";
-			fullPath: "/app/projects/$projectId/sessions/$sessionId";
-			preLoaderRoute: typeof AuthedAppProjectsProjectIdSessionsSessionIdRouteImport;
-			parentRoute: typeof AuthedAppRoute;
-		};
-	}
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authed': {
+      id: '/_authed'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/projects': {
+      id: '/api/projects'
+      path: '/api/projects'
+      fullPath: '/api/projects'
+      preLoaderRoute: typeof ApiProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/health': {
+      id: '/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
+      preLoaderRoute: typeof ApiHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authed/app': {
+      id: '/_authed/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AuthedAppRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/app/': {
+      id: '/_authed/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AuthedAppIndexRouteImport
+      parentRoute: typeof AuthedAppRoute
+    }
+    '/api/projects/$id': {
+      id: '/api/projects/$id'
+      path: '/$id'
+      fullPath: '/api/projects/$id'
+      preLoaderRoute: typeof ApiProjectsIdRouteImport
+      parentRoute: typeof ApiProjectsRoute
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/projects/$id/sessions': {
+      id: '/api/projects/$id/sessions'
+      path: '/sessions'
+      fullPath: '/api/projects/$id/sessions'
+      preLoaderRoute: typeof ApiProjectsIdSessionsRouteImport
+      parentRoute: typeof ApiProjectsIdRoute
+    }
+    '/_authed/app/projects/$projectId': {
+      id: '/_authed/app/projects/$projectId'
+      path: '/projects/$projectId'
+      fullPath: '/app/projects/$projectId'
+      preLoaderRoute: typeof AuthedAppProjectsProjectIdRouteImport
+      parentRoute: typeof AuthedAppRoute
+    }
+    '/api/projects/$id/sessions/$sid': {
+      id: '/api/projects/$id/sessions/$sid'
+      path: '/$sid'
+      fullPath: '/api/projects/$id/sessions/$sid'
+      preLoaderRoute: typeof ApiProjectsIdSessionsSidRouteImport
+      parentRoute: typeof ApiProjectsIdSessionsRoute
+    }
+    '/_authed/app/projects/$projectId_/sessions/$sessionId': {
+      id: '/_authed/app/projects/$projectId_/sessions/$sessionId'
+      path: '/projects/$projectId/sessions/$sessionId'
+      fullPath: '/app/projects/$projectId/sessions/$sessionId'
+      preLoaderRoute: typeof AuthedAppProjectsProjectIdSessionsSessionIdRouteImport
+      parentRoute: typeof AuthedAppRoute
+    }
+  }
 }
 
 interface AuthedAppRouteChildren {
-	AuthedAppIndexRoute: typeof AuthedAppIndexRoute;
-	AuthedAppProjectsProjectIdRoute: typeof AuthedAppProjectsProjectIdRoute;
-	AuthedAppProjectsProjectIdSessionsSessionIdRoute: typeof AuthedAppProjectsProjectIdSessionsSessionIdRoute;
+  AuthedAppIndexRoute: typeof AuthedAppIndexRoute
+  AuthedAppProjectsProjectIdRoute: typeof AuthedAppProjectsProjectIdRoute
+  AuthedAppProjectsProjectIdSessionsSessionIdRoute: typeof AuthedAppProjectsProjectIdSessionsSessionIdRoute
 }
 
 const AuthedAppRouteChildren: AuthedAppRouteChildren = {
-	AuthedAppIndexRoute: AuthedAppIndexRoute,
-	AuthedAppProjectsProjectIdRoute: AuthedAppProjectsProjectIdRoute,
-	AuthedAppProjectsProjectIdSessionsSessionIdRoute:
-		AuthedAppProjectsProjectIdSessionsSessionIdRoute,
-};
+  AuthedAppIndexRoute: AuthedAppIndexRoute,
+  AuthedAppProjectsProjectIdRoute: AuthedAppProjectsProjectIdRoute,
+  AuthedAppProjectsProjectIdSessionsSessionIdRoute:
+    AuthedAppProjectsProjectIdSessionsSessionIdRoute,
+}
 
 const AuthedAppRouteWithChildren = AuthedAppRoute._addFileChildren(
-	AuthedAppRouteChildren,
-);
+  AuthedAppRouteChildren,
+)
 
 interface AuthedRouteChildren {
-	AuthedAppRoute: typeof AuthedAppRouteWithChildren;
+  AuthedAppRoute: typeof AuthedAppRouteWithChildren
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
-	AuthedAppRoute: AuthedAppRouteWithChildren,
-};
+  AuthedAppRoute: AuthedAppRouteWithChildren,
+}
 
 const AuthedRouteWithChildren =
-	AuthedRoute._addFileChildren(AuthedRouteChildren);
+  AuthedRoute._addFileChildren(AuthedRouteChildren)
 
 interface ApiProjectsIdSessionsRouteChildren {
-	ApiProjectsIdSessionsSidRoute: typeof ApiProjectsIdSessionsSidRoute;
+  ApiProjectsIdSessionsSidRoute: typeof ApiProjectsIdSessionsSidRoute
 }
 
 const ApiProjectsIdSessionsRouteChildren: ApiProjectsIdSessionsRouteChildren = {
-	ApiProjectsIdSessionsSidRoute: ApiProjectsIdSessionsSidRoute,
-};
+  ApiProjectsIdSessionsSidRoute: ApiProjectsIdSessionsSidRoute,
+}
 
 const ApiProjectsIdSessionsRouteWithChildren =
-	ApiProjectsIdSessionsRoute._addFileChildren(
-		ApiProjectsIdSessionsRouteChildren,
-	);
+  ApiProjectsIdSessionsRoute._addFileChildren(
+    ApiProjectsIdSessionsRouteChildren,
+  )
 
 interface ApiProjectsIdRouteChildren {
-	ApiProjectsIdSessionsRoute: typeof ApiProjectsIdSessionsRouteWithChildren;
+  ApiProjectsIdSessionsRoute: typeof ApiProjectsIdSessionsRouteWithChildren
 }
 
 const ApiProjectsIdRouteChildren: ApiProjectsIdRouteChildren = {
-	ApiProjectsIdSessionsRoute: ApiProjectsIdSessionsRouteWithChildren,
-};
+  ApiProjectsIdSessionsRoute: ApiProjectsIdSessionsRouteWithChildren,
+}
 
 const ApiProjectsIdRouteWithChildren = ApiProjectsIdRoute._addFileChildren(
-	ApiProjectsIdRouteChildren,
-);
+  ApiProjectsIdRouteChildren,
+)
 
 interface ApiProjectsRouteChildren {
-	ApiProjectsIdRoute: typeof ApiProjectsIdRouteWithChildren;
+  ApiProjectsIdRoute: typeof ApiProjectsIdRouteWithChildren
 }
 
 const ApiProjectsRouteChildren: ApiProjectsRouteChildren = {
-	ApiProjectsIdRoute: ApiProjectsIdRouteWithChildren,
-};
+  ApiProjectsIdRoute: ApiProjectsIdRouteWithChildren,
+}
 
 const ApiProjectsRouteWithChildren = ApiProjectsRoute._addFileChildren(
-	ApiProjectsRouteChildren,
-);
+  ApiProjectsRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
-	IndexRoute: IndexRoute,
-	AuthedRoute: AuthedRouteWithChildren,
-	AuthRoute: AuthRoute,
-	ApiHealthRoute: ApiHealthRoute,
-	ApiProjectsRoute: ApiProjectsRouteWithChildren,
-	ApiAuthSplatRoute: ApiAuthSplatRoute,
-};
+  IndexRoute: IndexRoute,
+  AuthedRoute: AuthedRouteWithChildren,
+  AuthRoute: AuthRoute,
+  ApiHealthRoute: ApiHealthRoute,
+  ApiProjectsRoute: ApiProjectsRouteWithChildren,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
+}
 export const routeTree = rootRouteImport
-	._addFileChildren(rootRouteChildren)
-	._addFileTypes<FileRouteTypes>();
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()
 
-import type { createStart } from "@tanstack/react-start";
-import type { getRouter } from "./router.tsx";
-
-declare module "@tanstack/react-start" {
-	interface Register {
-		router: Awaited<ReturnType<typeof getRouter>>;
-	}
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
 }
