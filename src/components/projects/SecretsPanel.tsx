@@ -143,10 +143,7 @@ export function SecretsPanel({ projectId, secrets }: SecretsPanelProps) {
 
 	return (
 		<div className="bg-bg-secondary border border-border-light shadow-sm mb-8">
-			<div className="px-6 py-4 border-b border-border-light flex items-center justify-between">
-				<p className="text-xs text-text-muted">
-					Encrypted at rest. Injected into sandbox sessions.
-				</p>
+			<div className="px-6 py-4 border-b border-border-light flex items-center justify-end">
 				<div className="flex items-center gap-2">
 					<button
 						type="button"

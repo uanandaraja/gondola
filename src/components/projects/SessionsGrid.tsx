@@ -15,7 +15,7 @@ interface SessionsGridProps {
 
 export function SessionsGrid({ projectId, sessions }: SessionsGridProps) {
 	const router = useRouter();
-	const [showTerminated, setShowTerminated] = useState(false);
+	const [showInactive, setShowInactive] = useState(false);
 
 	const createSessionMutation = useMutation({
 		mutationFn: () => createNewSession({ data: projectId }),
@@ -30,30 +30,15 @@ export function SessionsGrid({ projectId, sessions }: SessionsGridProps) {
 
 	const sorted = sortSessionsByStatus(sessions);
 
-	const terminatedCount = sessions.filter(
-		(s) => s.status === "terminated",
-	).length;
-	const filtered = showTerminated
+	const inactiveCount = sessions.filter((s) => s.status !== "running").length;
+	const filtered = showInactive
 		? sorted
-		: sorted.filter((s) => s.status !== "terminated");
+		: sorted.filter((s) => s.status === "running");
 
 	return (
 		<div className="mb-8">
 			<div className="flex items-center justify-between mb-4">
-				<div className="flex items-center gap-3">
-					<h3 className="font-semibold text-lg">Sessions</h3>
-					{terminatedCount > 0 && (
-						<button
-							type="button"
-							onClick={() => setShowTerminated(!showTerminated)}
-							className="text-xs font-mono text-text-muted hover:text-text-secondary transition-colors duration-150"
-						>
-							{showTerminated
-								? "Hide terminated"
-								: `Show terminated (${terminatedCount})`}
-						</button>
-					)}
-				</div>
+				<h3 className="font-semibold text-lg">Sessions</h3>
 				<button
 					type="button"
 					onClick={() => createSessionMutation.mutate()}
@@ -63,6 +48,19 @@ export function SessionsGrid({ projectId, sessions }: SessionsGridProps) {
 					{createSessionMutation.isPending ? "CREATING..." : "NEW SESSION"}
 				</button>
 			</div>
+			{inactiveCount > 0 && (
+				<div className="mb-4">
+					<button
+						type="button"
+						onClick={() => setShowInactive(!showInactive)}
+						className="text-xs font-mono text-text-muted hover:text-text-secondary transition-colors duration-150"
+					>
+						{showInactive
+							? "Hide inactive"
+							: `Show inactive (${inactiveCount})`}
+					</button>
+				</div>
+			)}
 
 			{filtered.length === 0 ? (
 				<div className="bg-bg-secondary border border-border-light shadow-sm px-6 py-12 text-center text-text-muted">
