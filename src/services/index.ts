@@ -14,6 +14,6 @@ export const MainLive = Layer.mergeAll(
 );
 
 export { auth } from "./auth";
-export { ProjectService } from "./projects";
-export { SecretService } from "./secrets";
-export { SessionService } from "./sessions";
+export { ProjectService } from "./projects/service";
+export { SecretService } from "./secrets/service";
+export { SessionService } from "./sessions/service";
