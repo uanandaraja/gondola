@@ -17,7 +17,7 @@
 		"db:studio": "bunx drizzle-kit studio",
 		"lint": "bunx biome check",
 		"lint:fix": "bunx biome check --write",
-		"typecheck": "tsc --noEmit",
+		"typecheck": "tsgo --noEmit",
 		"prepare": "husky"
 	},
 	"dependencies": {
@@ -41,6 +41,7 @@
 		"@types/bun": "latest",
 		"@types/react": "^19.2.0",
 		"@types/react-dom": "^19.2.0",
+		"@typescript/native-preview": "^7.0.0-dev.20260207.1",
 		"@vitejs/plugin-react": "^5.0.4",
 		"drizzle-kit": "^0.31.8",
 		"husky": "^9.1.7",
