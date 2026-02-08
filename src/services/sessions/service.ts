@@ -1,12 +1,10 @@
 import { eq } from "drizzle-orm";
 import { Effect } from "effect";
 import { ModalClient } from "modal";
-import type { SessionRecord } from "@/db/schema";
 import * as schema from "@/db/schema";
 import { DatabaseClient } from "@/infra/db";
 import { ConfigError, DatabaseError } from "@/services/errors";
 import { ProjectService } from "@/services/projects";
-import { ProjectNotFoundError } from "@/services/projects/errors";
 import { SecretService } from "@/services/secrets";
 import { configureGitAuth, getGitHubAccount, getUserInfo } from "./auth";
 import { MODAL_APP_NAME, SANDBOX_TIMEOUT_MS } from "./constants";
@@ -177,7 +175,7 @@ export class SessionService extends Effect.Service<SessionService>()(
 					// Get tunnel URL
 					const tunnels = yield* Effect.tryPromise({
 						try: () => sandbox.tunnels(),
-						catch: (e) =>
+						catch: (_e) =>
 							new TunnelError({
 								message: "Failed to get sandbox tunnels",
 							}),
@@ -343,7 +341,7 @@ export class SessionService extends Effect.Service<SessionService>()(
 
 					const tunnels = yield* Effect.tryPromise({
 						try: () => sandbox.tunnels(),
-						catch: (e) =>
+						catch: (_e) =>
 							new TunnelError({ message: "Failed to get sandbox tunnels" }),
 					});
 					const opencodeUrl = tunnels[4096]?.url;

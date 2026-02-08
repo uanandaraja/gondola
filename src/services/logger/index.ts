@@ -1,4 +1,4 @@
-import { Effect, Layer, Logger, LogLevel } from "effect";
+import { Layer, Logger, LogLevel } from "effect";
 
 /**
  * Application logger configuration.

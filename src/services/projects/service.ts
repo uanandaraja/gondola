@@ -1,6 +1,5 @@
 import { and, count, eq, ne } from "drizzle-orm";
 import { Effect } from "effect";
-import type { ProjectRecord } from "@/db/schema";
 import * as schema from "@/db/schema";
 import { DatabaseClient } from "@/infra/db";
 import { DatabaseError } from "@/services/errors";

@@ -31,7 +31,7 @@ export function setupSandboxFromScratch(
 					"-c",
 					`cd /root/workspace && git clone ${branchFlag}${escapedUrl} repo 2>&1`,
 				]),
-			catch: (e) =>
+			catch: (_e) =>
 				new GitCloneError({
 					message: "Failed to start git clone",
 				}),
@@ -67,7 +67,8 @@ export function setupSandboxFromScratch(
 						"-c",
 						"cd /root/workspace/repo && git branch --show-current 2>&1",
 					]),
-				catch: (e) => new GitCloneError({ message: "Failed to detect branch" }),
+				catch: (_e) =>
+					new GitCloneError({ message: "Failed to detect branch" }),
 			});
 			const branchOutput = yield* Effect.tryPromise({
 				try: () => branchProc.stdout.readText(),
@@ -126,12 +127,12 @@ export function configureOpencode(sandbox: Sandbox, sessionId: string) {
 
 		const configDir = yield* Effect.tryPromise({
 			try: () => sandbox.exec(["mkdir", "-p", "/root/.config/opencode"]),
-			catch: (e) =>
+			catch: (_e) =>
 				new OpencodeStartError({ message: "Failed to create config dir" }),
 		});
 		yield* Effect.tryPromise({
 			try: () => configDir.wait(),
-			catch: (e) =>
+			catch: (_e) =>
 				new OpencodeStartError({ message: "Failed to create config dir" }),
 		});
 
@@ -159,12 +160,12 @@ export function configureOpencode(sandbox: Sandbox, sessionId: string) {
 					"-c",
 					`echo '${configContent}' > /root/.config/opencode/opencode.json`,
 				]),
-			catch: (e) =>
+			catch: (_e) =>
 				new OpencodeStartError({ message: "Failed to write config" }),
 		});
 		yield* Effect.tryPromise({
 			try: () => writeConfig.wait(),
-			catch: (e) =>
+			catch: (_e) =>
 				new OpencodeStartError({ message: "Failed to write config" }),
 		});
 
@@ -224,11 +225,13 @@ export function writeSecretsEnvFile(
 					"-c",
 					`echo '${encoded}' | base64 -d > /root/workspace/repo/.env`,
 				]),
-			catch: (e) => new OpencodeStartError({ message: "Failed to write .env" }),
+			catch: (_e) =>
+				new OpencodeStartError({ message: "Failed to write .env" }),
 		});
 		yield* Effect.tryPromise({
 			try: () => writeProc.wait(),
-			catch: (e) => new OpencodeStartError({ message: "Failed to write .env" }),
+			catch: (_e) =>
+				new OpencodeStartError({ message: "Failed to write .env" }),
 		});
 
 		console.log(`[${sessionId}] Project secrets written to .env`);

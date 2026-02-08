@@ -1,13 +1,10 @@
 import { and, eq } from "drizzle-orm";
 import { Effect } from "effect";
-import type { ProjectSecretRecord } from "@/db/schema";
 import * as schema from "@/db/schema";
 import { DatabaseClient } from "@/infra/db";
-import { ConfigError, DatabaseError } from "@/services/errors";
+import { DatabaseError } from "@/services/errors";
 import { ProjectService } from "@/services/projects";
-import { ProjectNotFoundError } from "@/services/projects/errors";
 import { decrypt, encrypt } from "./crypto";
-import { EncryptionError, SecretNotFoundError } from "./errors";
 
 /**
  * Input types for secret operations.

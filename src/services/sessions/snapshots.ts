@@ -48,7 +48,7 @@ export function takeSnapshot(sessionId: string) {
 	});
 }
 
-export function startSnapshotScheduler(sessionId: string) {
+export function startSnapshotScheduler(_sessionId: string) {
 	return setInterval(() => {
 		// The SessionService will manage this via runService
 		// For now, this is a placeholder
