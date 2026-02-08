@@ -58,23 +58,25 @@ export async function listProjects(userId: string): Promise<ProjectRecord[]> {
 export async function listProjectsWithSessionCounts(
 	userId: string,
 ): Promise<(ProjectRecord & { activeSessions: number })[]> {
-	const projects = await listProjects(userId);
-	if (projects.length === 0) return [];
-
-	const counts = await db
+	const result = await db
 		.select({
-			projectId: schema.sessions.projectId,
-			count: count(),
+			project: schema.projects,
+			activeSessions: count(schema.sessions.id),
 		})
-		.from(schema.sessions)
-		.where(ne(schema.sessions.status, "terminated"))
-		.groupBy(schema.sessions.projectId);
+		.from(schema.projects)
+		.leftJoin(
+			schema.sessions,
+			and(
+				eq(schema.sessions.projectId, schema.projects.id),
+				ne(schema.sessions.status, "terminated"),
+			),
+		)
+		.where(eq(schema.projects.userId, userId))
+		.groupBy(schema.projects.id);
 
-	const countMap = new Map(counts.map((c) => [c.projectId, c.count]));
-
-	return projects.map((p) => ({
-		...p,
-		activeSessions: countMap.get(p.id) ?? 0,
+	return result.map(({ project, activeSessions }) => ({
+		...project,
+		activeSessions: activeSessions ?? 0,
 	}));
 }
 
