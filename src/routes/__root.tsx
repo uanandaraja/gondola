@@ -1,14 +1,17 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-	createRootRoute,
+	createRootRouteWithContext,
 	HeadContent,
 	Link,
 	Outlet,
 	Scripts,
+	useRouteContext,
 } from "@tanstack/react-router";
 import appCss from "../styles/app.css?url";
 
-const queryClient = new QueryClient();
+export interface RouterContext {
+	queryClient: QueryClient;
+}
 
 const themeScript = `
 (function(){
@@ -19,7 +22,7 @@ const themeScript = `
 })();
 `;
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<RouterContext>()({
 	head: () => ({
 		meta: [
 			{ charSet: "utf-8" },
@@ -62,6 +65,8 @@ function NotFound() {
 }
 
 function RootComponent() {
+	const { queryClient } = useRouteContext({ from: "__root__" });
+
 	return (
 		<html lang="en" data-theme="dark">
 			<head>

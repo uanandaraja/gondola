@@ -9,11 +9,12 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "../hooks/useTheme";
 import { signOut } from "../services/auth/client";
-import { getSession } from "../services/auth/server";
+import { sessionQueryOptions } from "../services/auth/query-options";
 
 export const Route = createFileRoute("/_authed")({
-	beforeLoad: async () => {
-		const session = await getSession();
+	beforeLoad: async ({ context }) => {
+		const session =
+			await context.queryClient.ensureQueryData(sessionQueryOptions);
 
 		if (!session) {
 			throw redirect({ to: "/auth" });
