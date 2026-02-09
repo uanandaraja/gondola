@@ -3,11 +3,12 @@ import {
 	Link,
 	Outlet,
 	redirect,
+	useRouteContext,
 	useRouter,
 } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "../hooks/useTheme";
-import { signOut, useSession } from "../services/auth/client";
+import { signOut } from "../services/auth/client";
 import { getSession } from "../services/auth/server";
 
 export const Route = createFileRoute("/_authed")({
@@ -24,7 +25,7 @@ export const Route = createFileRoute("/_authed")({
 });
 
 function ProfileMenu() {
-	const { data: session } = useSession();
+	const { session } = useRouteContext({ from: "/_authed" });
 	const router = useRouter();
 	const [open, setOpen] = useState(false);
 	const ref = useRef<HTMLDivElement>(null);
