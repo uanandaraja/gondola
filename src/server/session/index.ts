@@ -91,6 +91,7 @@ export async function createSession(
 			sessionId,
 			project.githubUrl,
 			project.branch,
+			ghAccount?.accessToken,
 		);
 
 		// Write project secrets as .env file in repo

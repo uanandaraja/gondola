@@ -164,6 +164,7 @@ export class SessionService extends Effect.Service<SessionService>()(
 						sessionId,
 						project.githubUrl,
 						project.branch,
+						ghAccount?.accessToken,
 					);
 
 					// Write secrets

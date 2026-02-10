@@ -13,6 +13,7 @@ export function setupSandboxFromScratch(
 	sessionId: string,
 	githubUrl: string,
 	branch?: string | null,
+	githubToken?: string | null,
 ) {
 	return Effect.gen(function* () {
 		console.log(`[${sessionId}] Cloning repository...`);
@@ -20,7 +21,17 @@ export function setupSandboxFromScratch(
 		const validatedUrl = validateGitHubUrl(githubUrl);
 		const validatedBranch = branch ? validateBranchName(branch) : null;
 
-		const escapedUrl = shellEscape(validatedUrl);
+		// Inject token into URL for private repo access
+		let cloneUrl = validatedUrl;
+		if (githubToken && cloneUrl.startsWith("https://github.com/")) {
+			cloneUrl = cloneUrl.replace(
+				"https://github.com/",
+				`https://x-access-token:${githubToken}@github.com/`,
+			);
+		}
+
+		const escapedUrl = shellEscape(cloneUrl);
+		const escapedCleanUrl = shellEscape(validatedUrl);
 		const escapedBranch = validatedBranch ? shellEscape(validatedBranch) : null;
 		const branchFlag = escapedBranch ? `-b ${escapedBranch} ` : "";
 
@@ -56,6 +67,23 @@ export function setupSandboxFromScratch(
 		});
 
 		console.log(`[${sessionId}] Clone output: ${cloneOutput}`);
+
+		// Strip token from remote URL
+		if (githubToken) {
+			const resetProc = yield* Effect.tryPromise({
+				try: () =>
+					sandbox.exec([
+						"bash",
+						"-c",
+						`cd /root/workspace/repo && git remote set-url origin ${escapedCleanUrl}`,
+					]),
+				catch: () => null,
+			});
+			yield* Effect.tryPromise({
+				try: () => resetProc.wait(),
+				catch: () => null,
+			});
+		}
 
 		// Detect branch if not specified
 		let detectedBranch = branch;
