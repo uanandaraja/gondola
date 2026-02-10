@@ -74,15 +74,7 @@ export async function createSession(
 	console.log(`[${sessionId}] Sandbox created: ${sandbox.sandboxId}`);
 
 	try {
-		// Setup from scratch: clone, install, configure
-		await setupSandboxFromScratch(
-			sandbox,
-			sessionId,
-			project.githubUrl,
-			project.branch,
-		);
-
-		// Configure git and gh CLI auth
+		// Configure git auth before cloning (needed for private repos)
 		if (ghAccount?.accessToken && userInfo) {
 			await configureGitAuth(
 				sandbox,
@@ -92,6 +84,14 @@ export async function createSession(
 				userInfo.email,
 			);
 		}
+
+		// Setup from scratch: clone, install, configure
+		await setupSandboxFromScratch(
+			sandbox,
+			sessionId,
+			project.githubUrl,
+			project.branch,
+		);
 
 		// Write project secrets as .env file in repo
 		await writeSecretsEnvFile(sandbox, sessionId, projectSecrets);

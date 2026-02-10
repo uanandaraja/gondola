@@ -147,15 +147,7 @@ export class SessionService extends Effect.Service<SessionService>()(
 
 					console.log(`[${sessionId}] Sandbox created: ${sandbox.sandboxId}`);
 
-					// Setup sandbox from scratch
-					yield* setupSandboxFromScratch(
-						sandbox,
-						sessionId,
-						project.githubUrl,
-						project.branch,
-					);
-
-					// Configure git auth
+					// Configure git auth before cloning (needed for private repos)
 					if (ghAccount?.accessToken && userInfo) {
 						yield* configureGitAuth(
 							sandbox,
@@ -165,6 +157,14 @@ export class SessionService extends Effect.Service<SessionService>()(
 							userInfo.email,
 						);
 					}
+
+					// Setup sandbox from scratch
+					yield* setupSandboxFromScratch(
+						sandbox,
+						sessionId,
+						project.githubUrl,
+						project.branch,
+					);
 
 					// Write secrets
 					yield* writeSecretsEnvFile(sandbox, sessionId, projectSecrets);
