@@ -6,6 +6,7 @@ import {
 	useRouter,
 } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { TerminalSpinner } from "../../../components/TerminalSpinner";
 import { getStatusBadgeClass } from "../../../lib/session";
 import {
 	fetchSession,
@@ -203,9 +204,16 @@ function SessionDetail() {
 							<button
 								type="button"
 								onClick={handleDelete}
-								className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold font-mono uppercase tracking-wide bg-bg-secondary border border-error/50 text-error hover:bg-error/5 md:w-auto w-full transition-colors duration-150"
+								disabled={deleteMutation.isPending}
+								className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold font-mono uppercase tracking-wide bg-bg-secondary border border-error/50 text-error hover:bg-error/5 disabled:opacity-50 disabled:cursor-not-allowed md:w-auto w-full transition-colors duration-150"
 							>
-								TERMINATE SESSION
+								{deleteMutation.isPending ? (
+									<>
+										<TerminalSpinner size="sm" /> TERMINATING...
+									</>
+								) : (
+									"TERMINATE SESSION"
+								)}
 							</button>
 						)}
 					</div>

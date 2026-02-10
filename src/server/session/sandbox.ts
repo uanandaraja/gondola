@@ -40,17 +40,19 @@ export async function setupSandboxFromScratch(
 		`cd /root/workspace && git clone ${branchFlag}${escapedUrl} repo 2>&1`,
 	]);
 
+	const cloneExitCode = await cloneProc.wait();
 	const cloneOutput = await cloneProc.stdout.readText();
-	const cloneError = await cloneProc.stderr.readText();
 
-	try {
-		await cloneProc.wait();
-		console.log(`[${sessionId}] Clone output: ${cloneOutput}`);
-	} catch (_error) {
-		console.error(`[${sessionId}] Clone failed:`, cloneError || cloneOutput);
+	if (cloneExitCode !== 0) {
+		console.error(
+			`[${sessionId}] Clone failed (exit ${cloneExitCode}):`,
+			cloneOutput,
+		);
 		await sandbox.terminate();
-		throw new Error(`Failed to clone repository: ${cloneError || cloneOutput}`);
+		throw new Error(`Failed to clone repository: ${cloneOutput}`);
 	}
+
+	console.log(`[${sessionId}] Clone output: ${cloneOutput}`);
 
 	// Strip token from remote URL
 	if (githubToken) {

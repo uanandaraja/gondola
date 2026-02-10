@@ -16,7 +16,9 @@ export function setupSandboxFromScratch(
 	githubToken?: string | null,
 ) {
 	return Effect.gen(function* () {
-		console.log(`[${sessionId}] Cloning repository...`);
+		console.log(
+			`[${sessionId}] Cloning repository (${githubToken ? "authenticated" : "anonymous"})...`,
+		);
 
 		const validatedUrl = validateGitHubUrl(githubUrl);
 		const validatedBranch = branch ? validateBranchName(branch) : null;
@@ -48,23 +50,24 @@ export function setupSandboxFromScratch(
 				}),
 		});
 
+		const cloneExitCode = yield* Effect.tryPromise({
+			try: () => cloneProc.wait(),
+			catch: () => -1,
+		});
 		const cloneOutput = yield* Effect.tryPromise({
 			try: () => cloneProc.stdout.readText(),
 			catch: () => "",
 		});
-		const cloneError = yield* Effect.tryPromise({
-			try: () => cloneProc.stderr.readText(),
-			catch: () => "",
-		});
 
-		yield* Effect.tryPromise({
-			try: () => cloneProc.wait(),
-			catch: () =>
-				new GitCloneError({
-					message: "Git clone failed",
-					output: cloneError || cloneOutput,
-				}),
-		});
+		if (cloneExitCode !== 0) {
+			console.error(
+				`[${sessionId}] Clone failed (exit ${cloneExitCode}): ${cloneOutput}`,
+			);
+			return yield* new GitCloneError({
+				message: "Git clone failed",
+				output: cloneOutput,
+			});
+		}
 
 		console.log(`[${sessionId}] Clone output: ${cloneOutput}`);
 

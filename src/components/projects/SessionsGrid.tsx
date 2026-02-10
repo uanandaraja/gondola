@@ -7,6 +7,7 @@ import {
 	createNewSession,
 	resumeExistingSession,
 } from "../../server/functions";
+import { TerminalSpinner } from "../TerminalSpinner";
 
 interface SessionsGridProps {
 	projectId: string;
@@ -45,7 +46,13 @@ export function SessionsGrid({ projectId, sessions }: SessionsGridProps) {
 					disabled={createSessionMutation.isPending}
 					className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold font-mono uppercase tracking-wide bg-accent text-bg-secondary hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
 				>
-					{createSessionMutation.isPending ? "CREATING..." : "NEW SESSION"}
+					{createSessionMutation.isPending ? (
+						<>
+							<TerminalSpinner size="sm" /> CREATING...
+						</>
+					) : (
+						"NEW SESSION"
+					)}
 				</button>
 			</div>
 			{inactiveCount > 0 && (
@@ -110,9 +117,13 @@ export function SessionsGrid({ projectId, sessions }: SessionsGridProps) {
 											disabled={resumeSessionMutation.isPending}
 											className="flex-1 inline-flex items-center justify-center px-4 py-2 text-xs font-semibold font-mono uppercase tracking-wide border border-accent text-accent hover:bg-accent hover:text-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
 										>
-											{resumeSessionMutation.isPending
-												? "RESUMING..."
-												: "RESUME"}
+											{resumeSessionMutation.isPending ? (
+												<>
+													<TerminalSpinner size="sm" /> RESUMING...
+												</>
+											) : (
+												"RESUME"
+											)}
 										</button>
 									)}
 								<Link
